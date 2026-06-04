@@ -7,10 +7,17 @@ import sitemap from '@astrojs/sitemap';
 import netlify from '@astrojs/netlify';
 import tailwindcss from '@tailwindcss/vite';
 
+// Keystatic's admin UI calls its local API without a trailing slash, which
+// trailingSlash:'always' rejects (admin shows "Unable to load collection").
+// The admin only runs in `astro dev` (local storage), so relax to 'ignore' in
+// dev only. The production BUILD keeps 'always' so deployed/indexed URLs are
+// spec-compliant (specs/02) — deployment behaviour is unchanged.
+const isDev = process.argv.includes('dev');
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.grantbthept.co.za',
-  trailingSlash: 'always', // CRITICAL — every indexed URL ends in '/' (see specs/02)
+  trailingSlash: isDev ? 'ignore' : 'always', // build = 'always' (CRITICAL, specs/02)
   build: { format: 'directory' }, // emits /path/index.html → served as /path/
   // Static by default: every content page is prerendered. Only the Keystatic admin
   // (and future contact/newsletter endpoints) opt into on-demand rendering, served

@@ -16,6 +16,28 @@ numbered specs in this folder are the requirements; this file is the *method*.
    sensitive change (redirects, sitemap, robots, canonical) must stop for review. State
    clearly: "Acceptance gate — needs human confirmation: …".
 
+## Minimal-code mandate (non-negotiable)
+
+Default to the SIMPLEST implementation that satisfies the spec and the Definition of Done.
+Complexity must earn its place — the bar is "the least code that fully solves it," not
+"the most flexible thing I can build."
+
+- Rule of three: no abstraction, helper, or generalisation until there are 3 real,
+  current uses. No "we might need it later." Build for today's spec only.
+- Prefer the platform over a library: CSS over JS, Astro/HTML built-ins over add-ons,
+  a few lines of vanilla over a dependency. Do not add a package if ~15 lines do the job.
+- No wrapper components around a single element. No util file for one function used once.
+  No config/options nobody asked for. No defensive layers for hypothetical inputs.
+- When two approaches both work, pick the one with less code and fewer moving parts —
+  even if the other is "cleaner architecture." Fewer moving parts IS the cleaner choice here.
+- Delete, don't comment out. No dead code, no TODO scaffolding, no unused exports/imports.
+- Before adding any new file, dependency, or abstraction, state in one line why the
+  simpler inline version doesn't work. If you can't justify it briefly, don't add it.
+- If a component or function grows past what's readable at a glance, that's a smell —
+  simplify, don't add structure to manage the complexity.
+
+When in doubt: write less. The reviewer would rather see 20 obvious lines than 8 clever ones.
+
 ## Stack conventions (see 01 for the full list)
 
 - **Astro 6.4.x**, output `static`, `trailingSlash: 'always'`, `build.format: 'directory'`.
