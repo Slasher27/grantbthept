@@ -1,0 +1,39 @@
+{
+  "items": [
+    {
+      "title": "Personal Training",
+      "blurb": "One-on-one coaching built around your goals, with regular assessments and ongoing support.",
+      "bullets": [
+        "Basic body composition, movement and mobility assessment with weekly, bi-weekly or monthly follow up assessments",
+        "Access to habit and nutrition coaching software with daily advice/reminders on sustainable lifestyle changes – training, nutrition, recovery, and more",
+        "Diet and lifestyle assessment with structured goal setting"
+      ],
+      "image": null,
+      "ctaLabel": "Get in touch"
+    },
+    {
+      "title": "Lifestyle Coaching",
+      "blurb": "Remote nutrition and habit coaching to build sustainable lifestyle changes that actually last.",
+      "bullets": [
+        "Nutrition and lifestyle assessment",
+        "Access to habit and nutrition coaching software with daily advice/reminders on sustainable lifestyle changes – training, nutrition, recovery, and more",
+        "Advice on optimal training for gym and or at home",
+        "Structured training programme for home and or at gym (additional once off fee per routine)",
+        "Feedback via messaging system only, unless additional coaching/skype sessions required"
+      ],
+      "image": null,
+      "ctaLabel": "Get in touch"
+    },
+    {
+      "title": "Corporate Wellness",
+      "blurb": "Group nutrition and lifestyle coaching to keep your team healthy, focused and energised.",
+      "bullets": [
+        "Group nutrition and lifestyle coaching in a corporate environment",
+        "Access to habit and nutrition coaching software with daily advice/reminders on sustainable lifestyle changes – training, nutrition, recovery, and more",
+        "Advice on optimal training for gym and or at home"
+      ],
+      "image": null,
+      "ctaLabel": "Get in touch"
+    }
+  ]
+}

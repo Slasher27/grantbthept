@@ -22,6 +22,7 @@ export const categories: Category[] = [
   { slug: 'recipes', name: 'Recipes' },
   { slug: 'plans', name: 'Plans' },
   { slug: 'plans/eating', name: 'Eating Plans' },
+  { slug: 'plans/workout', name: 'Workout Plans' }, // discovered live (/category/plans/workout/) — preserve [VERIFY at gate]
 ];
 
 export const categorySlugs = categories.map((c) => c.slug);

@@ -51,7 +51,9 @@ export default config({
         heroImage: fields.image({
           label: 'Hero image',
           directory: 'src/assets/posts',
-          publicPath: '/src/assets/posts/',
+          // Relative path from the entry (src/content/posts/<slug>/index.mdx) into
+          // src/assets/posts so Astro's image() in content.config.ts resolves it.
+          publicPath: '../../../assets/posts/',
           validation: { isRequired: true },
         }),
         heroAlt: fields.text({
