@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// Single author for now → /author/grantbooysen/. See specs/02.
+export async function getStaticPaths() {
+  const posts = (await getCollection('posts')).filter((p) => !p.data.draft);
+  const authors = [...new Set(posts.map((p) => p.data.author))];
+  return authors.map((author) => ({
+    params: { author },
+    props: { author, posts: posts.filter((p) => p.data.author === author) },
+  }));
+}
+
+const { author, posts } = Astro.props;
+---
+
+<BaseLayout title={`${author} — Grant Booysen PT`}>
+  <main>
+    <h1>{author}</h1>
+    <p>Phase 1 scaffold — author archive placeholder ({posts.length} posts).</p>
+  </main>
+</BaseLayout>

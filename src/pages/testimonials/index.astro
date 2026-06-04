@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// Only consented testimonials publish (POPIA). The schema also enforces this.
+const testimonials = (await getCollection('testimonials')).filter(
+  (t) => t.data.consent === true,
+);
+---
+
+<BaseLayout title="Testimonials — Grant Booysen PT">
+  <main>
+    <h1>Testimonials</h1>
+    <p>Phase 1 scaffold — testimonials placeholder ({testimonials.length} stories).</p>
+  </main>
+</BaseLayout>

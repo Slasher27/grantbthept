@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { categories, getCategory } from '../../lib/categories';
+
+// One route for flat and nested categories alike — the category slug is a PATH
+// (e.g. 'plans/eating' → /category/plans/eating/), captured by the rest param.
+// See specs/02.
+export async function getStaticPaths() {
+  const posts = (await getCollection('posts')).filter((p) => !p.data.draft);
+  return categories.map((cat) => ({
+    params: { category: cat.slug },
+    props: {
+      category: cat,
+      posts: posts.filter((p) => p.data.categories.includes(cat.slug)),
+    },
+  }));
+}
+
+const { category, posts } = Astro.props;
+const label = getCategory(category.slug)?.name ?? category.slug;
+---
+
+<BaseLayout title={`${label} — Grant Booysen PT`}>
+  <main>
+    <h1>{label}</h1>
+    <p>Phase 1 scaffold — category archive placeholder ({posts.length} posts).</p>
+  </main>
+</BaseLayout>

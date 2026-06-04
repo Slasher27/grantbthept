@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// Blog index = page 1, lives at /news/ (not /news/page/1/). See specs/02.
+const posts = (await getCollection('posts')).filter((p) => !p.data.draft);
+---
+
+<BaseLayout title="News — Grant Booysen PT">
+  <main>
+    <h1>News</h1>
+    <p>Phase 1 scaffold — blog index placeholder ({posts.length} posts).</p>
+  </main>
+</BaseLayout>

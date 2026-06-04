@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+import { postRouteParams } from '../../../../lib/url';
+
+// Post URL is derived from pubDate (zero-padded) + original slug, so the path
+// exactly reproduces the legacy WordPress URL. See specs/02 — CRITICAL.
+export async function getStaticPaths() {
+  const posts = (await getCollection('posts')).filter((p) => !p.data.draft);
+  return posts.map((post) => ({
+    params: postRouteParams(post.data.pubDate, post.data.slug),
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={`${post.data.title} — Grant Booysen PT`}>
+  <main>
+    <article>
+      <h1>{post.data.title}</h1>
+      <Content />
+    </article>
+  </main>
+</BaseLayout>

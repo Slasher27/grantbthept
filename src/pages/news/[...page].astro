@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// Pagination for pages 2..N at /news/page/N/. Page 1 stays at /news/
+// (handled by news/index.astro), so this route deliberately skips it. See specs/02.
+export async function getStaticPaths() {
+  const PAGE_SIZE = 9;
+  const posts = (await getCollection('posts'))
+    .filter((p) => !p.data.draft)
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+  const total = Math.ceil(posts.length / PAGE_SIZE) || 1;
+
+  const paths = [];
+  for (let n = 2; n <= total; n++) {
+    paths.push({
+      params: { page: `page/${n}` },
+      props: {
+        currentPage: n,
+        totalPages: total,
+        posts: posts.slice((n - 1) * PAGE_SIZE, n * PAGE_SIZE),
+      },
+    });
+  }
+  return paths;
+}
+
+const { currentPage, totalPages, posts } = Astro.props;
+---
+
+<BaseLayout title={`News — page ${currentPage} — Grant Booysen PT`}>
+  <main>
+    <h1>News — page {currentPage} of {totalPages}</h1>
+    <p>Phase 1 scaffold — pagination placeholder ({posts.length} posts).</p>
+  </main>
+</BaseLayout>
