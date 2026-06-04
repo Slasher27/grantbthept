@@ -2,14 +2,14 @@ import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { categorySlugs } from './lib/categories';
 
-// Blog posts ("Latest News"). The exact original WP slug + pubDate drive the
-// date-based URL (see specs/02). Categories must match the registry in lib/categories.
+// Blog posts ("Latest News"). The entry's folder name is the slug; that + pubDate
+// drive the date-based URL (see specs/02). For migrated posts the folder is the
+// exact original WP slug. Categories must match the registry in lib/categories.
 const posts = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/posts' }),
   schema: ({ image }) =>
     z.object({
       title: z.string().max(70),
-      slug: z.string(), // EXACT original WP slug — never regenerated from title
       pubDate: z.coerce.date(), // drives the date-based URL
       updatedDate: z.coerce.date().optional(), // freshness signal (AEO)
       excerpt: z.string().min(50).max(160), // meta description + card text

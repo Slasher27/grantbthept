@@ -20,14 +20,11 @@ export default config({
       entryLayout: 'content',
       columns: ['title', 'pubDate'],
       schema: {
+        // The slug (URL-editable here) is the entry's folder name and drives the
+        // date-based URL (specs/02). Keep it stable — for migrated posts it must
+        // stay the exact original WP slug, or the legacy URL breaks.
         title: fields.slug({
           name: { label: 'Title', validation: { length: { max: 70 } } },
-        }),
-        // EXACT original WP slug — drives the date-based URL (specs/02). Never
-        // regenerated from the title.
-        slug: fields.text({
-          label: 'Original WP slug',
-          validation: { isRequired: true },
         }),
         pubDate: fields.date({
           label: 'Publish date',
