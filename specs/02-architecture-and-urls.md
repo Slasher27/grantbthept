@@ -16,6 +16,11 @@ build: { format: 'directory' }
 This is a deliberate departure from the house `never` convention. Do not "fix" it.
 A request to `/news` (no slash) must `301` → `/news/`, never serve a duplicate.
 
+> **Dev-only exception (implemented):** Keystatic's admin API calls itself without a
+> trailing slash, which `'always'` rejects ("Unable to load collection"). `astro.config.mjs`
+> therefore relaxes to `trailingSlash: 'ignore'` **in `astro dev` only** (`isDev` guard); the
+> production build keeps `'always'`, so deployed/indexed URLs are unchanged.
+
 ## URL inventory & mapping
 
 > **First task before coding:** export the *complete* indexed URL list from Google
@@ -53,7 +58,9 @@ A request to `/news` (no slash) must `301` → `/news/`, never serve a duplicate
 /category/fitness/
 /category/lifestyle/
 /category/recipes/
+/category/plans/          (parent)
 /category/plans/eating/   (nested under "plans")
+/category/plans/workout/  (nested — discovered live, [VERIFY] full list at gate)
 ```
 
 ## Date-based routing (how)
@@ -67,9 +74,13 @@ from that date so the path is reproducible and stable:
 ```
 
 In `getStaticPaths`, map each post to `{ year, month: zeroPad(m), day: zeroPad(d), slug }`.
-The `slug` is the original WP slug (store it explicitly in frontmatter as `slug:` to
-guarantee an exact match — never let the CMS regenerate it from the title). **Any post
-whose new slug ≠ old slug is an acceptance gate item** (must be a manual 301 instead).
+The `slug` is the entry's **folder name** — posts live at `src/content/posts/<slug>/index.mdx`,
+and the route derives the slug from the entry id (`post.id.split('/')[0]`, see `lib/url.ts`
++ the route). Keystatic sets that folder once from the title (its `slugField`) and never
+regenerates it afterwards. There is no separate `slug` frontmatter field. For migrated
+posts the folder name **is** the exact original WP slug, so the path reproduces the legacy
+URL. **Any post whose folder name ≠ its old WP slug is an acceptance gate item** (renaming a
+live post's folder changes its URL — must be a manual 301 instead).
 
 ## Redirects
 

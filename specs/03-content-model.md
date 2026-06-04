@@ -6,19 +6,20 @@ strict (`.strict()` where practical) so unknown fields fail the build rather tha
 
 ## `posts` (blog / "Latest News")
 
-`src/content/posts/*.mdx`
+`src/content/posts/<slug>/index.mdx` — one folder per post; the `<slug>` folder name is
+the URL slug (see `02`). There is **no** `slug` frontmatter field — the route derives it
+from the entry id.
 
 ```ts
 const posts = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/posts' }),
   schema: ({ image }) => z.object({
     title: z.string().max(70),                 // keeps SEO titles sane
-    slug: z.string(),                          // EXACT original WP slug — see 02
     pubDate: z.coerce.date(),                  // drives the date-based URL
     updatedDate: z.coerce.date().optional(),   // surfaced for freshness (AEO)
     excerpt: z.string().min(50).max(160),      // meta description + card text
     answer: z.string().max(320).optional(),    // 40–60 word answer-first lead (AEO, 05)
-    categories: z.array(z.string()).min(1),    // e.g. ['fitness','lifestyle'] or ['plans/eating']
+    categories: z.array(z.enum(categorySlugs)).min(1),  // validated against lib/categories
     heroImage: image(),                        // optimised via Astro Image
     heroAlt: z.string(),
     author: z.literal('grantbooysen').default('grantbooysen'),
@@ -77,8 +78,16 @@ const testimonials = defineCollection({
 
 - Content is written once and referenced — e.g. service blurbs come only from the
   `services` singleton; never duplicate them in a page template.
-- Images live in `src/assets/` (or Keystatic-managed `src/assets/`), are imported, and
-  pass through Astro Image. No raw `/public` content images except favicons/OG fallback.
+- **Collection entry images co-locate with the entry.** A post's hero lives at
+  `src/content/posts/<slug>/hero.<ext>` and is referenced by **bare filename**
+  (`heroImage: hero.<ext>`, no leading `./` — that's what Keystatic writes and reads back,
+  and Astro's `image()` resolves it relative to the entry). Testimonial before/after images
+  sit beside their `index.mdx` the same way. Keystatic's image fields for these collections
+  set no `directory`/`publicPath`, so uploads land in the entry folder automatically — one
+  rule for hand-authored and CMS-created entries alike.
+- **Shared / singleton imagery** (services, credentials, OG default) lives in `src/assets/`,
+  since singletons have no per-entry folder. All images are imported and pass through Astro
+  Image — no raw `/public` content images except favicons/OG fallback.
 - Every post should carry an `answer` (40–60 words) and, where natural, a short `faq`
   block — both feed the AEO strategy in `05` and cost nothing if absent.
 - Migrate existing post bodies from WordPress as clean MDX: strip Elementor wrappers,

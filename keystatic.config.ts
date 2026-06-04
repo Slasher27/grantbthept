@@ -45,12 +45,11 @@ export default config({
           label: 'Categories',
           options: categoryOptions,
         }),
+        // No directory/publicPath → Keystatic stores the upload beside the entry
+        // (src/content/posts/<slug>/) and writes a ./hero.<ext> path. Each post is
+        // self-contained; Astro's image() in content.config.ts resolves the relative path.
         heroImage: fields.image({
           label: 'Hero image',
-          directory: 'src/assets/posts',
-          // Relative path from the entry (src/content/posts/<slug>/index.mdx) into
-          // src/assets/posts so Astro's image() in content.config.ts resolves it.
-          publicPath: '../../../assets/posts/',
           validation: { isRequired: true },
         }),
         heroAlt: fields.text({
@@ -103,16 +102,9 @@ export default config({
           defaultValue: 'personal-training',
         }),
         durationWeeks: fields.integer({ label: 'Duration (weeks)' }),
-        beforeImage: fields.image({
-          label: 'Before image',
-          directory: 'src/assets/testimonials',
-          publicPath: '/src/assets/testimonials/',
-        }),
-        afterImage: fields.image({
-          label: 'After image',
-          directory: 'src/assets/testimonials',
-          publicPath: '/src/assets/testimonials/',
-        }),
+        // Co-located beside the entry (src/content/testimonials/<slug>/), same as posts.
+        beforeImage: fields.image({ label: 'Before image' }),
+        afterImage: fields.image({ label: 'After image' }),
         imageAlt: fields.text({ label: 'Image alt text' }),
         rating: fields.integer({
           label: 'Rating (1–5)',
