@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import keystatic from '@keystatic/astro';
@@ -24,6 +24,19 @@ export default defineConfig({
   // as Netlify Functions via the adapter below — the "hybrid route" in specs/01.
   output: 'static',
   adapter: netlify(),
+  // Self-hosted brand font (specs/04, 06). The Google provider downloads Poppins at
+  // build time and serves it from our own origin — no third-party font CDN at runtime.
+  // Poppins is the live brand font; 3 weights only (body / semibold UI / bold headings).
+  fonts: [
+    {
+      provider: fontProviders.google(),
+      name: 'Poppins',
+      cssVariable: '--font-poppins',
+      weights: [400, 600, 700],
+      styles: ['normal'],
+      subsets: ['latin'],
+    },
+  ],
   integrations: [
     react(),
     mdx(),

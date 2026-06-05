@@ -1,0 +1,62 @@
+---
+// Dark hero: rotating service words (CSS-only, no JS), H1, subheading, two CTAs.
+// The rotator is decorative (aria-hidden) — the services are listed for real below.
+import Section from '../ui/Section.astro';
+import Button from '../ui/Button.astro';
+import homepage from '../../content/singletons/homepage.json';
+
+const { heroHeading, heroSubheading, rotatingWords } = homepage;
+// Duplicate the first word at the end so the CSS loop wraps seamlessly.
+const words = [...rotatingWords, rotatingWords[0]];
+---
+
+<Section tone="dark" class="text-center">
+  <div class="mx-auto max-w-3xl">
+    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-paper/60">Specialising in</p>
+
+    <div class="rotator mt-2 text-xl font-bold text-accent" aria-hidden="true">
+      <ul class="rotator__list">
+        {words.map((w) => <li>{w}</li>)}
+      </ul>
+    </div>
+
+    <h1 class="mt-6 text-2xl font-bold leading-[1.05]">{heroHeading}</h1>
+    <p class="mx-auto mt-6 max-w-xl text-lg text-paper/80">{heroSubheading}</p>
+
+    <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+      <Button href="/#services" variant="accent">View Services</Button>
+      <Button href="/#contact" variant="outline">Contact Me</Button>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .rotator {
+    height: 1.4em;
+    overflow: hidden;
+  }
+  .rotator__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    animation: rotate-words 9s infinite;
+  }
+  .rotator__list li {
+    height: 1.4em;
+    line-height: 1.4em;
+  }
+  /* Six slots (5 words + the duplicated first); each step is 100% / 6 ≈ 16.667%. */
+  @keyframes rotate-words {
+    0%, 12% { transform: translateY(0); }
+    16.6%, 29% { transform: translateY(-16.667%); }
+    33.3%, 45% { transform: translateY(-33.333%); }
+    50%, 62% { transform: translateY(-50%); }
+    66.6%, 79% { transform: translateY(-66.667%); }
+    83.3%, 100% { transform: translateY(-83.333%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rotator__list {
+      animation: none;
+    }
+  }
+</style>

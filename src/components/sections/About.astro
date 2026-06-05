@@ -1,0 +1,23 @@
+---
+// About section (#about-me). Bio from the homepage singleton, split into paragraphs.
+// Profile image is not in the content model yet — add it (and the asymmetric image
+// layout + Person schema) when the photo asset is gathered.
+import Section from '../ui/Section.astro';
+import homepage from '../../content/singletons/homepage.json';
+
+const paragraphs = homepage.aboutBody.split('\n\n');
+---
+
+<Section id="about-me" tone="paper" labelledby="about-heading">
+  <div class="mx-auto max-w-3xl">
+    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-accent">About</p>
+    <h2 id="about-heading" class="mt-3 text-xl">Meet Grant Booysen</h2>
+    <p class="mt-2 text-sm font-medium text-muted">
+      REPSSA-registered personal trainer &amp; lifestyle coach — Cape Town, South Africa.
+    </p>
+
+    <div class="mt-8 flex flex-col gap-5 text-base text-muted">
+      {paragraphs.map((p) => <p>{p}</p>)}
+    </div>
+  </div>
+</Section>

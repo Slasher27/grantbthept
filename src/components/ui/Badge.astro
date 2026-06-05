@@ -1,0 +1,24 @@
+---
+// Category badge: a small text pill (text, never colour alone — specs/06 a11y).
+// Renders a link when `href` is set, otherwise a static span.
+interface Props {
+  href?: string;
+  class?: string;
+}
+const { href, class: className } = Astro.props;
+
+const base =
+  'inline-flex items-center rounded-full border border-line px-3 py-1 text-xs font-medium text-muted';
+---
+
+{
+  href ? (
+    <a href={href} class:list={[base, 'hover:border-accent hover:text-accent', className]}>
+      <slot />
+    </a>
+  ) : (
+    <span class:list={[base, className]}>
+      <slot />
+    </span>
+  )
+}

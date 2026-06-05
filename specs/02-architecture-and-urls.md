@@ -40,6 +40,7 @@ A request to `/news` (no slash) must `301` → `/news/`, never serve a duplicate
 | Author archive | `/author/grantbooysen/` | `src/pages/author/[author].astro` (single author for now). |
 | Comment fragments | `/2023/06/05/motivation/#comments` | Fragment only — no redirect needed. Comments retired (below). |
 | **NEW** Testimonials | `/testimonials/` | `src/pages/testimonials/index.astro`. |
+| **NEW** Testimonial story | `/testimonials/<slug>/` | `src/pages/testimonials/[slug].astro` — one per consented entry. |
 | **NEW** Privacy | `/privacy-policy/` | `src/pages/privacy-policy/index.astro` (POPIA — see 05). |
 
 ### Known post URLs (seed the mapping; confirm full list from GSC)

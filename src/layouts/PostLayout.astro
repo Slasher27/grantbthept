@@ -1,0 +1,174 @@
+---
+// Post template (specs/07): breadcrumb, meta row, answer-first lead, Prose body,
+// optional FAQ, health disclaimer, share links, author bio, related posts, CTA.
+// Zero JS — share links are plain anchors, FAQ is a plain <dl>. JSON-LD (BlogPosting +
+// FAQPage + BreadcrumbList) is added in the schema pass (specs/05).
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from './BaseLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Prose from '../components/ui/Prose.astro';
+import Badge from '../components/ui/Badge.astro';
+import Button from '../components/ui/Button.astro';
+import Breadcrumb from '../components/blog/Breadcrumb.astro';
+import PostCard from '../components/blog/PostCard.astro';
+import { getCategory } from '../lib/categories';
+import { postUrl } from '../lib/url';
+import { formatDate, isoDate } from '../lib/dates';
+import { relatedPosts } from '../lib/related';
+import { author } from '../lib/author';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+const { post } = Astro.props;
+const { title, excerpt, pubDate, updatedDate, answer, categories, faq, heroImage, heroAlt } =
+  post.data;
+const slug = post.id.split('/')[0];
+const url = postUrl(pubDate, slug);
+
+const related = relatedPosts(await getCollection('posts'), post, 3);
+
+// Nutrition/health posts carry a "not medical advice" line (specs/05 YMYL).
+const HEALTH_CATEGORIES = ['recipes', 'plans/eating'];
+const isHealth = categories.some((c) => HEALTH_CATEGORIES.includes(c));
+
+const shareUrl = new URL(url, Astro.site).href;
+const enc = encodeURIComponent(shareUrl);
+const encTitle = encodeURIComponent(title);
+const shares = [
+  { label: 'Share on Facebook', short: 'Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${enc}` },
+  { label: 'Share on X', short: 'X', href: `https://twitter.com/intent/tweet?url=${enc}&text=${encTitle}` },
+  { label: 'Share on WhatsApp', short: 'WhatsApp', href: `https://wa.me/?text=${encTitle}%20${enc}` },
+];
+---
+
+<BaseLayout title={`${title} | Grant Booysen`} description={excerpt} type="article">
+  <article>
+    <Section tone="paper">
+      <div class="mx-auto max-w-[70ch]">
+        <Breadcrumb
+          items={[{ label: 'Home', href: '/' }, { label: 'Latest News', href: '/news/' }, { label: title }]}
+        />
+
+        <div class="mt-6 flex flex-wrap gap-2">
+          {categories.map((c) => <Badge href={`/category/${c}/`}>{getCategory(c)?.name ?? c}</Badge>)}
+        </div>
+
+        <h1 class="mt-4 text-2xl">{title}</h1>
+
+        <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted">
+          <a href={author.url} class="font-medium text-ink hover:text-accent">{author.name}</a>
+          <span aria-hidden="true">&middot;</span>
+          <time datetime={isoDate(pubDate)}>{formatDate(pubDate)}</time>
+          {
+            updatedDate && (
+              <>
+                <span aria-hidden="true">&middot;</span>
+                <span>Updated {formatDate(updatedDate)}</span>
+              </>
+            )
+          }
+        </div>
+
+        <Image
+          src={heroImage}
+          alt={heroAlt}
+          widths={[480, 768, 1280]}
+          sizes="(min-width: 768px) 680px, 100vw"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          class="mt-8 aspect-[16/10] w-full rounded-[var(--radius)] object-cover"
+        />
+
+        {
+          answer && (
+            <p class="mt-8 border-l-2 border-accent pl-5 text-lg font-medium text-ink">{answer}</p>
+          )
+        }
+
+        <div class="mt-8">
+          <Prose><slot /></Prose>
+        </div>
+
+        {
+          isHealth && (
+            <p class="mt-10 rounded-[var(--radius)] border border-line bg-surface p-4 text-sm text-muted">
+              This article is for general information only and is not medical advice. Consult a
+              doctor or registered dietitian before making significant changes to your diet or
+              exercise routine.
+            </p>
+          )
+        }
+
+        {
+          faq && faq.length > 0 && (
+            <section class="mt-12" aria-labelledby="faq-heading">
+              <h2 id="faq-heading" class="text-xl">Frequently asked questions</h2>
+              <dl class="mt-6 border-t border-line">
+                {faq.map((item) => (
+                  <div class="border-b border-line py-5">
+                    <dt class="font-semibold text-ink">{item.q}</dt>
+                    <dd class="mt-2 text-muted">{item.a}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )
+        }
+
+        <div class="mt-12 flex flex-wrap items-center gap-4 border-t border-line pt-6 text-sm">
+          <span class="font-semibold">Share</span>
+          {
+            shares.map((s) => (
+              <a
+                href={s.href}
+                target="_blank"
+                rel="noopener"
+                aria-label={s.label}
+                class="font-medium text-muted hover:text-accent"
+              >
+                {s.short}
+              </a>
+            ))
+          }
+        </div>
+
+        <aside class="mt-10 rounded-[var(--radius)] border border-line bg-surface p-6">
+          <p class="text-xs uppercase tracking-[0.15em] text-muted">Written by</p>
+          <p class="mt-1 text-lg font-bold">
+            <a href={author.url} class="hover:text-accent">{author.name}</a>
+          </p>
+          <p class="mt-2 text-sm text-muted">{author.bio}</p>
+        </aside>
+      </div>
+    </Section>
+
+    {
+      related.length > 0 && (
+        <Section tone="light" labelledby="related-heading">
+          <h2 id="related-heading" class="text-xl">Related articles</h2>
+          <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((p) => (
+              <PostCard post={p} />
+            ))}
+          </div>
+        </Section>
+      )
+    }
+
+    <Section tone="dark" class="text-center">
+      <h2 class="text-xl">Train with Grant</h2>
+      <p class="mx-auto mt-4 max-w-xl text-paper/80">
+        Ready to put this into practice? Personal training and lifestyle coaching in Cape Town or
+        coached remotely.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <Button href="/#services" variant="accent">View services</Button>
+        <Button href="/#contact" variant="outline">Contact me</Button>
+      </div>
+    </Section>
+  </article>
+</BaseLayout>

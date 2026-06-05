@@ -1,0 +1,52 @@
+---
+// Services section (#services): three offerings from the services singleton.
+// Service schema is added in the structured-data pass. Card images are optional —
+// rendered only once the assets exist.
+import Section from '../ui/Section.astro';
+import Card from '../ui/Card.astro';
+import Button from '../ui/Button.astro';
+import { contactCta } from '../../lib/nav';
+import services from '../../content/singletons/services.json';
+---
+
+<Section id="services" tone="light" labelledby="services-heading">
+  <div class="max-w-2xl">
+    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Services</p>
+    <h2 id="services-heading" class="mt-3 text-xl">How I can help you</h2>
+  </div>
+
+  <div class="mt-12 grid gap-6 md:grid-cols-3">
+    {
+      services.items.map((s) => (
+        <Card class="flex flex-col p-6 md:p-8">
+          <h3 class="text-lg font-bold">{s.title}</h3>
+          <p class="mt-3 text-sm text-muted">{s.blurb}</p>
+          <ul class="mt-5 flex flex-col gap-3 text-sm">
+            {s.bullets.map((b) => (
+              <li class="flex gap-3">
+                <svg
+                  aria-hidden="true"
+                  class="mt-1 shrink-0 text-accent"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+          <Button href={contactCta.href} variant="outline" class="mt-8 self-start">
+            {s.ctaLabel}
+          </Button>
+        </Card>
+      ))
+    }
+  </div>
+</Section>

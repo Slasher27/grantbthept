@@ -1,0 +1,39 @@
+---
+// The one button/CTA. Renders an <a> when `href` is set, otherwise a <button>.
+// Variants (specs/04): `solid` is the light-section default (ink → accent on hover,
+// ~19:1 AA). `accent` is the energetic fill that works on light OR dark — accent with
+// INK text is 5.97:1 (AA), unlike accent+white (3:1). `outline` uses currentColor so it
+// inherits the section tone (ink on light, paper on dark) and stays AA in both.
+interface Props {
+  href?: string;
+  variant?: 'solid' | 'accent' | 'outline';
+  type?: 'button' | 'submit';
+  class?: string;
+}
+const { href, variant = 'solid', type = 'button', class: className, ...rest } = Astro.props;
+
+const base =
+  'inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius)] ' +
+  'px-6 py-3 text-sm font-semibold transition-colors ' +
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
+
+const variants = {
+  solid: 'bg-ink text-paper hover:bg-accent hover:text-accent-ink',
+  accent: 'bg-accent text-ink hover:bg-ink hover:text-paper',
+  outline: 'border border-current/50 text-current hover:border-current',
+};
+
+const cls = [base, variants[variant], className];
+---
+
+{
+  href ? (
+    <a href={href} class:list={cls} {...rest}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} class:list={cls} {...rest}>
+      <slot />
+    </button>
+  )
+}

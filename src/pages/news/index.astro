@@ -1,14 +1,20 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArchiveLayout from '../../layouts/ArchiveLayout.astro';
 import { getCollection } from 'astro:content';
 
 // Blog index = page 1, lives at /news/ (not /news/page/1/). See specs/02.
-const posts = (await getCollection('posts')).filter((p) => !p.data.draft);
+const PAGE_SIZE = 9;
+const posts = (await getCollection('posts'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const totalPages = Math.ceil(posts.length / PAGE_SIZE) || 1;
 ---
 
-<BaseLayout title="News — Grant Booysen PT">
-  <main>
-    <h1>News</h1>
-    <p>Phase 1 scaffold — blog index placeholder ({posts.length} posts).</p>
-  </main>
-</BaseLayout>
+<ArchiveLayout
+  title="Latest News | Grant Booysen"
+  description="Training, nutrition and lifestyle articles from Cape Town personal trainer Grant Booysen."
+  heading="Latest News"
+  breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Latest News' }]}
+  posts={posts.slice(0, PAGE_SIZE)}
+  pager={{ currentPage: 1, totalPages, basePath: '/news/' }}
+/>

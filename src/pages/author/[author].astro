@@ -1,23 +1,30 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArchiveLayout from '../../layouts/ArchiveLayout.astro';
 import { getCollection } from 'astro:content';
+import { author } from '../../lib/author';
 
 // Single author for now → /author/grantbooysen/. See specs/02.
 export async function getStaticPaths() {
   const posts = (await getCollection('posts')).filter((p) => !p.data.draft);
   const authors = [...new Set(posts.map((p) => p.data.author))];
-  return authors.map((author) => ({
-    params: { author },
-    props: { author, posts: posts.filter((p) => p.data.author === author) },
+  return authors.map((a) => ({
+    params: { author: a },
+    props: {
+      posts: posts
+        .filter((p) => p.data.author === a)
+        .sort((x, y) => y.data.pubDate.getTime() - x.data.pubDate.getTime()),
+    },
   }));
 }
 
-const { author, posts } = Astro.props;
+const { posts } = Astro.props;
 ---
 
-<BaseLayout title={`${author} — Grant Booysen PT`}>
-  <main>
-    <h1>{author}</h1>
-    <p>Phase 1 scaffold — author archive placeholder ({posts.length} posts).</p>
-  </main>
-</BaseLayout>
+<ArchiveLayout
+  title={`${author.name} | Grant Booysen`}
+  description={`Articles by ${author.name}, a REPSSA-registered personal trainer and lifestyle coach in Cape Town.`}
+  heading={author.name}
+  breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Latest News', href: '/news/' }, { label: author.name }]}
+  intro={author.bio}
+  posts={posts}
+/>

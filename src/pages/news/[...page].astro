@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArchiveLayout from '../../layouts/ArchiveLayout.astro';
 import { getCollection } from 'astro:content';
 
 // Pagination for pages 2..N at /news/page/N/. Page 1 stays at /news/
@@ -28,9 +28,11 @@ export async function getStaticPaths() {
 const { currentPage, totalPages, posts } = Astro.props;
 ---
 
-<BaseLayout title={`News — page ${currentPage} — Grant Booysen PT`}>
-  <main>
-    <h1>News — page {currentPage} of {totalPages}</h1>
-    <p>Phase 1 scaffold — pagination placeholder ({posts.length} posts).</p>
-  </main>
-</BaseLayout>
+<ArchiveLayout
+  title={`Latest News — page ${currentPage} | Grant Booysen`}
+  description="Training, nutrition and lifestyle articles from Cape Town personal trainer Grant Booysen."
+  heading="Latest News"
+  breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Latest News' }]}
+  posts={posts}
+  pager={{ currentPage, totalPages, basePath: '/news/' }}
+/>

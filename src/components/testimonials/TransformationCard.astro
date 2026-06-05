@@ -1,0 +1,49 @@
+---
+// One client transformation card (specs/07), composing the shared Card surface and
+// linking to its full story page. Before/after pair renders only when both images
+// exist. Only consented testimonials reach here (filtered by the page).
+import type { CollectionEntry } from 'astro:content';
+import Card from '../ui/Card.astro';
+import Badge from '../ui/Badge.astro';
+import Rating from './Rating.astro';
+import BeforeAfter from './BeforeAfter.astro';
+import { PROGRAM_LABELS, testimonialUrl } from '../../lib/testimonials';
+
+interface Props {
+  testimonial: CollectionEntry<'testimonials'>;
+}
+const { testimonial } = Astro.props;
+const { clientName, headline, summary, program, durationWeeks, beforeImage, afterImage, imageAlt, rating } =
+  testimonial.data;
+const href = testimonialUrl(testimonial);
+const hasPair = beforeImage && afterImage;
+---
+
+<Card class="group flex flex-col">
+  {
+    hasPair && (
+      <a href={href} tabindex="-1" aria-hidden="true" class="block">
+        <BeforeAfter before={beforeImage!} after={afterImage!} name={clientName} alt={imageAlt} />
+      </a>
+    )
+  }
+
+  <div class="flex flex-1 flex-col gap-3 p-5">
+    <div class="flex flex-wrap items-center gap-3">
+      <Badge>{PROGRAM_LABELS[program] ?? program}</Badge>
+      {durationWeeks && <span class="text-xs text-muted">{durationWeeks} weeks</span>}
+    </div>
+
+    <h2 class="text-lg font-bold leading-snug">
+      <a href={href} class="hover:text-accent">{headline}</a>
+    </h2>
+    <p class="text-sm text-muted">{summary}</p>
+
+    {rating && <Rating rating={rating} class="pt-1" />}
+
+    <p class="mt-auto pt-2 text-xs font-medium text-muted">
+      &mdash; {clientName}
+      <a href={href} class="ml-1 text-accent hover:underline">Read story &rarr;</a>
+    </p>
+  </div>
+</Card>

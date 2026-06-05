@@ -1,0 +1,33 @@
+---
+// Breadcrumb trail for blog pages (specs/07). The last item is the current page.
+// BreadcrumbList JSON-LD is emitted separately in the schema pass (specs/05).
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  items: Crumb[];
+}
+const { items } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb" class="text-sm text-muted">
+  <ol class="flex flex-wrap items-center gap-2">
+    {
+      items.map((c, i) => (
+        <li class="flex items-center gap-2">
+          {c.href ? (
+            <a href={c.href} class="hover:text-accent">
+              {c.label}
+            </a>
+          ) : (
+            <span aria-current="page" class="text-ink">
+              {c.label}
+            </span>
+          )}
+          {i < items.length - 1 && <span aria-hidden="true">/</span>}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

@@ -1,0 +1,41 @@
+---
+// Blog post card: hero image, category badges, title, excerpt, date (specs/07).
+// The whole image + title link to the date-based post URL (built via lib/url).
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import Card from '../ui/Card.astro';
+import Badge from '../ui/Badge.astro';
+import { postUrl } from '../../lib/url';
+import { getCategory } from '../../lib/categories';
+import { formatDate, isoDate } from '../../lib/dates';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+const { post } = Astro.props;
+const slug = post.id.split('/')[0];
+const href = postUrl(post.data.pubDate, slug);
+const { title, excerpt, pubDate, heroImage, heroAlt, categories } = post.data;
+---
+
+<Card class="group flex flex-col">
+  <a href={href} class="block" tabindex="-1" aria-hidden="true">
+    <Image
+      src={heroImage}
+      alt={heroAlt}
+      widths={[384, 640, 960]}
+      sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw"
+      class="aspect-[16/10] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+    />
+  </a>
+  <div class="flex flex-1 flex-col gap-3 p-5">
+    <div class="flex flex-wrap gap-2">
+      {categories.map((c) => <Badge href={`/category/${c}/`}>{getCategory(c)?.name ?? c}</Badge>)}
+    </div>
+    <h3 class="text-lg font-bold leading-snug">
+      <a href={href} class="hover:text-accent">{title}</a>
+    </h3>
+    <p class="text-sm text-muted">{excerpt}</p>
+    <time datetime={isoDate(pubDate)} class="mt-auto pt-1 text-xs text-muted">{formatDate(pubDate)}</time>
+  </div>
+</Card>

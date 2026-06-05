@@ -1,0 +1,13 @@
+---
+// Typographic wrapper for rendered MDX (post + testimonial bodies). The `.prose`
+// rules live in global.css so they reach the nested MDX elements (which carry no
+// utility classes). This component is just the single, named insertion point.
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<div class:list={['prose', className]}>
+  <slot />
+</div>

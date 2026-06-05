@@ -1,0 +1,39 @@
+---
+// Prev/next pager for paginated archives. Page 1 lives at the base path (e.g. /news/),
+// page N at <base>page/N/ — matching the route split in specs/02. Renders nothing for
+// a single page. `rel="prev|next"` gives crawlers the sequence (specs/05).
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  basePath: string;
+}
+const { currentPage, totalPages, basePath } = Astro.props;
+const pageHref = (n: number) => (n === 1 ? basePath : `${basePath}page/${n}/`);
+const hasPrev = currentPage > 1;
+const hasNext = currentPage < totalPages;
+---
+
+{
+  totalPages > 1 && (
+    <nav
+      aria-label="Pagination"
+      class="mt-12 flex items-center justify-between border-t border-line pt-6 text-sm"
+    >
+      {hasPrev ? (
+        <a rel="prev" href={pageHref(currentPage - 1)} class="font-semibold hover:text-accent">
+          &larr; Newer
+        </a>
+      ) : (
+        <span class="text-muted">&larr; Newer</span>
+      )}
+      <span class="text-muted">Page {currentPage} of {totalPages}</span>
+      {hasNext ? (
+        <a rel="next" href={pageHref(currentPage + 1)} class="font-semibold hover:text-accent">
+          Older &rarr;
+        </a>
+      ) : (
+        <span class="text-muted">Older &rarr;</span>
+      )}
+    </nav>
+  )
+}

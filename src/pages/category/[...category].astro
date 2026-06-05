@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArchiveLayout from '../../layouts/ArchiveLayout.astro';
 import { getCollection } from 'astro:content';
 import { categories, getCategory } from '../../lib/categories';
 
@@ -12,18 +12,35 @@ export async function getStaticPaths() {
     params: { category: cat.slug },
     props: {
       category: cat,
-      posts: posts.filter((p) => p.data.categories.includes(cat.slug)),
+      posts: posts
+        .filter((p) => p.data.categories.includes(cat.slug))
+        .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()),
     },
   }));
 }
 
 const { category, posts } = Astro.props;
-const label = getCategory(category.slug)?.name ?? category.slug;
+const label = category.name;
+
+// Breadcrumb reflects the nested path: plans/eating → Home › Latest News › Plans ›
+// Eating Plans, with each ancestor linking to its own archive.
+const parts = category.slug.split('/');
+const crumbs: { label: string; href?: string }[] = [
+  { label: 'Home', href: '/' },
+  { label: 'Latest News', href: '/news/' },
+];
+let acc = '';
+parts.forEach((part, i) => {
+  acc = acc ? `${acc}/${part}` : part;
+  const name = getCategory(acc)?.name ?? part;
+  crumbs.push(i === parts.length - 1 ? { label: name } : { label: name, href: `/category/${acc}/` });
+});
 ---
 
-<BaseLayout title={`${label} — Grant Booysen PT`}>
-  <main>
-    <h1>{label}</h1>
-    <p>Phase 1 scaffold — category archive placeholder ({posts.length} posts).</p>
-  </main>
-</BaseLayout>
+<ArchiveLayout
+  title={`${label} | Grant Booysen`}
+  description={`Articles about ${label.toLowerCase()} from Cape Town personal trainer Grant Booysen.`}
+  heading={label}
+  breadcrumb={crumbs}
+  posts={posts}
+/>

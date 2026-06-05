@@ -1,10 +1,102 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/ui/Section.astro';
+import Prose from '../../components/ui/Prose.astro';
+import Breadcrumb from '../../components/blog/Breadcrumb.astro';
+import siteSettings from '../../content/singletons/site-settings.json';
+
+// POPIA privacy policy. DRAFT — every [VERIFY] item (provider names, retention period,
+// contact details) must be confirmed with Grant at an acceptance gate before launch
+// (specs/05, CLAUDE.md). Safe to show in a demo while clearly marked draft.
+const contactEmail = siteSettings.contactEmail;
 ---
 
-<BaseLayout title="Privacy Policy — Grant Booysen PT">
-  <main>
-    <h1>Privacy Policy</h1>
-    <p>Phase 1 scaffold — POPIA privacy policy placeholder (see specs/05).</p>
-  </main>
+<BaseLayout
+  title="Privacy Policy | Grant Booysen"
+  description="How Grant Booysen Personal Trainer collects, uses and protects your personal information under POPIA."
+>
+  <Section tone="paper">
+    <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Privacy Policy' }]} />
+    <h1 class="mt-6 text-2xl">Privacy Policy</h1>
+    <p class="mt-3 text-sm text-muted">
+      Draft &mdash; pending final confirmation. Last updated 5 June 2026.
+    </p>
+
+    <Prose class="mt-8">
+      <p>
+        This policy explains how Grant Booysen Personal Trainer (&ldquo;we&rdquo;,
+        &ldquo;us&rdquo;) collects, uses and protects your personal information in line with
+        South Africa&rsquo;s Protection of Personal Information Act (POPIA).
+      </p>
+
+      <h2>Information we collect</h2>
+      <ul>
+        <li>
+          <strong>Contact form:</strong> your name, email address and the message you send us.
+        </li>
+        <li>
+          <strong>Newsletter (if you subscribe):</strong> your email address.
+        </li>
+        <li>
+          <strong>Usage data:</strong> basic, privacy-friendly analytics that do not identify
+          you personally. [VERIFY — confirm analytics provider, e.g. Plausible/Fathom, or none.]
+        </li>
+      </ul>
+
+      <h2>How we use your information</h2>
+      <ul>
+        <li>To respond to your enquiry and provide the coaching services you ask about.</li>
+        <li>To send you our newsletter, only if you have opted in (double opt-in).</li>
+        <li>To understand, in aggregate, how the website is used so we can improve it.</li>
+      </ul>
+      <p>
+        We rely on your <strong>consent</strong> for the contact form and newsletter. You can
+        withdraw consent at any time.
+      </p>
+
+      <h2>Who we share it with</h2>
+      <p>
+        We do not sell your personal information. We share it only with the service providers
+        needed to operate the site:
+      </p>
+      <ul>
+        <li><strong>Website hosting:</strong> Netlify (hosting and form delivery).</li>
+        <li>
+          <strong>Email delivery / newsletter:</strong> [VERIFY — confirm provider, e.g. Resend
+          for contact email and the newsletter provider once chosen.]
+        </li>
+      </ul>
+
+      <h2>How long we keep it</h2>
+      <p>
+        We keep contact enquiries only as long as needed to deal with your request, and
+        newsletter details until you unsubscribe. [VERIFY — confirm a specific retention period.]
+      </p>
+
+      <h2>Your rights under POPIA</h2>
+      <p>You have the right to:</p>
+      <ul>
+        <li>Ask what personal information we hold about you and request a copy.</li>
+        <li>Ask us to correct or delete your information.</li>
+        <li>Object to or withdraw consent for our processing.</li>
+        <li>
+          Lodge a complaint with the Information Regulator of South Africa if you believe your
+          rights have been infringed.
+        </li>
+      </ul>
+
+      <h2>Contact</h2>
+      <p>
+        For any privacy request or question, email
+        <a href={`mailto:${contactEmail}`}>{contactEmail}</a>. [VERIFY — confirm the contact
+        address for data requests.]
+      </p>
+
+      <h2>Changes to this policy</h2>
+      <p>
+        We may update this policy from time to time. The latest version will always be on this
+        page with its update date.
+      </p>
+    </Prose>
+  </Section>
 </BaseLayout>

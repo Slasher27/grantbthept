@@ -1,0 +1,13 @@
+---
+// The one reusable card surface (specs/04): hairline border, radius, tinted bg, and
+// overflow clipping so full-bleed media inside follows the rounded corners. Padding is
+// the consumer's choice — content cards add it, media cards keep the image flush.
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<div class:list={['overflow-hidden rounded-[var(--radius)] border border-line bg-surface', className]}>
+  <slot />
+</div>

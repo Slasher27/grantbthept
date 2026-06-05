@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import PostLayout from '../../../../layouts/PostLayout.astro';
 import { getCollection, render } from 'astro:content';
 import { postRouteParams } from '../../../../lib/url';
 
@@ -18,11 +18,6 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<BaseLayout title={`${post.data.title} — Grant Booysen PT`}>
-  <main>
-    <article>
-      <h1>{post.data.title}</h1>
-      <Content />
-    </article>
-  </main>
-</BaseLayout>
+<PostLayout post={post}>
+  <Content />
+</PostLayout>

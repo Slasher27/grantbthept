@@ -1,15 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand — TODO: REPLACE with sampled values from the live site (see specs/04 + Gate A) */
-  --color-ink:        #0f0f10;   /* near-black: logo, headlines, body on light */
-  --color-paper:      #fafaf8;   /* off-white page background (not pure #fff) */
-  --color-surface:    #ffffff;   /* cards */
-  --color-muted:      #6b6b70;   /* secondary text */
-  --color-line:       #e6e6e2;   /* hairlines / borders */
-  --color-accent:     #c8412b;   /* SINGLE energetic accent — match brand */
+  /* Brand palette — SAMPLED from the live site (grantbthept.co.za, Blocksy theme
+     --theme-palette-color-N). These are the real brand colours, not placeholders. */
+  --color-ink:        #030306;   /* near-black: logo, headlines, strong text (palette-4) */
+  --color-paper:      #fbfbfb;   /* off-white page background (palette-7) */
+  --color-surface:    #ffffff;   /* cards (palette-8) */
+  --color-muted:      #70707e;   /* secondary/body text — AA 4.7:1 on paper (palette-3) */
+  --color-line:       #dfdfe2;   /* hairlines / borders (palette-5) */
+  --color-accent:     #fd5a37;   /* single energetic accent — brand red-orange (palette-1).
+                                    3:1 on white → fills/detail/hover, not small body text. */
   --color-accent-ink: #ffffff;   /* text on accent */
-  --color-dark:       #131316;   /* dark sections (hero/footer) */
+  --color-dark:       #030306;   /* dark hero/footer bg (palette-4) */
+
+  /* Brand font: Poppins (live --theme-font-family) — self-hosted via the Astro Fonts API
+     (astro.config `fonts` → cssVariable --font-poppins). One family; weight gives contrast.
+     Overriding --font-sans makes Tailwind's preflight apply it site-wide. */
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 
   /* Type scale (fluid, clamp-based) */
   --text-xs:   clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
@@ -26,4 +33,104 @@
 
   --radius: 0.5rem;
   --container: 72rem;     /* max content width */
+}
+
+@layer base {
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Display type: tight leading, balanced wraps. Colour inherits from the section
+     tone (ink on light, paper on dark), so headings are not given a fixed colour. */
+  h1, h2, h3 {
+    line-height: 1.1;
+    font-weight: 700;
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* Skip link: off-screen until focused (specs/06 keyboard nav). */
+  .skip-link {
+    position: absolute;
+    left: var(--space-2);
+    top: -4rem;
+    z-index: 100;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius);
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    transition: top 0.15s ease;
+  }
+  .skip-link:focus {
+    top: var(--space-2);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Long-form MDX typography (applied via the Prose component). Lives here, not in
+     a scoped component style, so it reaches the nested MDX elements. */
+  .prose {
+    max-width: 70ch;
+    font-size: var(--text-base);
+    line-height: 1.7;
+  }
+  .prose > * + * {
+    margin-block-start: 1.25em;
+  }
+  .prose h2 {
+    font-size: var(--text-lg);
+    line-height: 1.2;
+    margin-block-start: 2em;
+  }
+  .prose h3 {
+    font-size: var(--text-base);
+    font-weight: 700;
+    margin-block-start: 1.6em;
+  }
+  .prose :is(h2, h3) + * {
+    margin-block-start: 0.6em;
+  }
+  .prose ul {
+    list-style: disc;
+  }
+  .prose ol {
+    list-style: decimal;
+  }
+  .prose :is(ul, ol) {
+    padding-inline-start: 1.4em;
+  }
+  .prose li + li {
+    margin-block-start: 0.4em;
+  }
+  .prose a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--color-accent);
+  }
+  .prose a:hover {
+    color: var(--color-accent);
+  }
+  .prose strong {
+    font-weight: 700;
+  }
 }

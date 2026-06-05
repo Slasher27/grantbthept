@@ -1,0 +1,47 @@
+---
+// Shared layout for every post-list page: /news/, pagination, category and author
+// archives (DRY — specs/02, 07). Breadcrumb + H1 + optional intro + post grid + pager.
+import BaseLayout from './BaseLayout.astro';
+import Section from '../components/ui/Section.astro';
+import Breadcrumb from '../components/blog/Breadcrumb.astro';
+import PostCard from '../components/blog/PostCard.astro';
+import Pager from '../components/blog/Pager.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  title: string;
+  description: string;
+  heading: string;
+  breadcrumb: Crumb[];
+  posts: CollectionEntry<'posts'>[];
+  intro?: string;
+  pager?: { currentPage: number; totalPages: number; basePath: string };
+}
+const { title, description, heading, breadcrumb, posts, intro, pager } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <Section tone="paper">
+    <Breadcrumb items={breadcrumb} />
+    <h1 class="mt-6 text-2xl">{heading}</h1>
+    {intro && <p class="mt-4 max-w-2xl text-muted">{intro}</p>}
+
+    {
+      posts.length > 0 ? (
+        <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      ) : (
+        <p class="mt-12 text-muted">No articles here yet — check back soon.</p>
+      )
+    }
+
+    {pager && <Pager currentPage={pager.currentPage} totalPages={pager.totalPages} basePath={pager.basePath} />}
+  </Section>
+</BaseLayout>

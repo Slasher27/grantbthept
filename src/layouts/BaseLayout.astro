@@ -1,23 +1,40 @@
 ---
-// Minimal base layout — the single place global.css is imported (specs/04).
-// Head/meta, fonts, CSP and real chrome (Header/Footer) land in Phase 3.
+// The document shell: head (BaseHead + self-hosted fonts), skip link, global
+// header/footer chrome, and the single <main> landmark. Pages supply inner content.
 import '../styles/global.css';
+import { Font } from 'astro:assets';
+import BaseHead from '../components/layout/BaseHead.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
 
 interface Props {
   title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
 }
 
-const { title = 'Grant Booysen PT' } = Astro.props;
+const {
+  title = 'Grant Booysen Personal Trainer',
+  description =
+    'Personal training, lifestyle coaching and corporate wellness in Cape Town with Grant Booysen, REPSSA-registered personal trainer.',
+  image,
+  type,
+} = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en-ZA">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
+    <BaseHead title={title} description={description} image={image} type={type} />
+    <Font cssVariable="--font-poppins" preload />
   </head>
   <body>
-    <slot />
+    <a href="#main" class="skip-link">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
   </body>
 </html>

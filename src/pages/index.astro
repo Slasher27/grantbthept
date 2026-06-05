@@ -1,10 +1,22 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import About from '../components/sections/About.astro';
+import Services from '../components/sections/Services.astro';
+import BlogPreview from '../components/sections/BlogPreview.astro';
+import Credentials from '../components/sections/Credentials.astro';
+import ContactSection from '../components/sections/ContactSection.astro';
+
+const title = 'Personal Training & Lifestyle Coaching | Grant Booysen';
+const description =
+  'One-on-one personal training, lifestyle and nutrition coaching, and corporate wellness in Cape Town with Grant Booysen, a REPSSA-registered trainer.';
 ---
 
-<BaseLayout title="Grant Booysen PT">
-  <main>
-    <h1>Grant Booysen PT</h1>
-    <p>Phase 1 scaffold — home placeholder.</p>
-  </main>
+<BaseLayout title={title} description={description}>
+  <Hero />
+  <About />
+  <Services />
+  <BlogPreview />
+  <Credentials />
+  <ContactSection />
 </BaseLayout>

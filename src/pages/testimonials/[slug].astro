@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/ui/Section.astro';
+import Prose from '../../components/ui/Prose.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import Breadcrumb from '../../components/blog/Breadcrumb.astro';
+import Rating from '../../components/testimonials/Rating.astro';
+import BeforeAfter from '../../components/testimonials/BeforeAfter.astro';
+import { getCollection, render } from 'astro:content';
+import { PROGRAM_LABELS, testimonialSlug } from '../../lib/testimonials';
+
+// Individual transformation story at /testimonials/<slug>/. Only consented entries
+// build (POPIA — the schema also enforces consent). Review/AggregateRating JSON-LD is
+// added in the schema pass (specs/05).
+export async function getStaticPaths() {
+  const items = (await getCollection('testimonials')).filter((t) => t.data.consent === true);
+  return items.map((t) => ({ params: { slug: testimonialSlug(t) }, props: { testimonial: t } }));
+}
+
+const { testimonial } = Astro.props;
+const { Content } = await render(testimonial);
+const { clientName, headline, summary, program, durationWeeks, beforeImage, afterImage, imageAlt, rating } =
+  testimonial.data;
+const hasPair = beforeImage && afterImage;
+---
+
+<BaseLayout title={`${headline} | Client Transformations | Grant Booysen`} description={summary}>
+  <article>
+    <Section tone="paper">
+      <div class="mx-auto max-w-[70ch]">
+        <Breadcrumb
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Testimonials', href: '/testimonials/' },
+            { label: headline },
+          ]}
+        />
+
+        <div class="mt-6 flex flex-wrap items-center gap-3 text-sm text-muted">
+          <Badge>{PROGRAM_LABELS[program] ?? program}</Badge>
+          {durationWeeks && <span>{durationWeeks} weeks</span>}
+          {rating && <Rating rating={rating} />}
+        </div>
+
+        <h1 class="mt-4 text-2xl">{headline}</h1>
+        <p class="mt-3 text-lg text-muted">{summary}</p>
+
+        {
+          hasPair && (
+            <div class="mt-8 overflow-hidden rounded-[var(--radius)] border border-line">
+              <BeforeAfter
+                before={beforeImage!}
+                after={afterImage!}
+                name={clientName}
+                alt={imageAlt}
+                widths={[360, 540, 720]}
+                sizes="(min-width: 768px) 360px, 45vw"
+              />
+            </div>
+          )
+        }
+
+        <Prose class="mt-8"><Content /></Prose>
+
+        <p class="mt-8 text-sm font-medium text-muted">&mdash; {clientName}</p>
+      </div>
+    </Section>
+
+    <Section tone="dark" class="text-center">
+      <h2 class="text-xl">Ready to write your own story?</h2>
+      <p class="mx-auto mt-4 max-w-xl text-paper/80">
+        Personal training and lifestyle coaching in Cape Town or coached remotely.
+      </p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <Button href="/#contact" variant="accent">Get started</Button>
+        <Button href="/testimonials/" variant="outline">More stories</Button>
+      </div>
+    </Section>
+  </article>
+</BaseLayout>

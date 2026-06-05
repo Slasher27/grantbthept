@@ -1,0 +1,92 @@
+---
+// Sticky site header: wordmark, desktop nav + Contact CTA, and an accessible
+// mobile disclosure. The toggle is ~15 lines of vanilla (specs/CLAUDE minimal-code
+// mandate) rather than Alpine — a hamburger doesn't justify a dependency, and it
+// keeps the post template near-zero-JS (specs/06).
+import Container from '../ui/Container.astro';
+import Button from '../ui/Button.astro';
+import { navLinks, contactCta } from '../../lib/nav';
+---
+
+<header class="sticky top-0 z-50 border-b border-line bg-paper/90 backdrop-blur">
+  <Container>
+    <div class="flex items-center justify-between gap-4 py-4">
+      <a href="/" class="text-lg font-bold tracking-tight text-ink">Grant Booysen</a>
+
+      <nav class="hidden items-center gap-8 md:flex" aria-label="Primary">
+        {
+          navLinks.map((l) => (
+            <a href={l.href} class="text-sm font-medium text-ink hover:text-accent">
+              {l.label}
+            </a>
+          ))
+        }
+        <Button href={contactCta.href}>{contactCta.label}</Button>
+      </nav>
+
+      <button
+        type="button"
+        class="inline-flex min-h-11 min-w-11 items-center justify-center text-ink md:hidden"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        data-nav-toggle
+      >
+        <span class="sr-only">Menu</span>
+        <svg
+          aria-hidden="true"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </Container>
+
+  <nav id="mobile-nav" hidden aria-label="Mobile" class="border-t border-line bg-paper md:hidden">
+    <Container>
+      <ul class="flex flex-col gap-1 py-4">
+        {
+          navLinks.map((l) => (
+            <li>
+              <a href={l.href} class="block py-2 text-base font-medium text-ink hover:text-accent">
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+        <li class="pt-2">
+          <Button href={contactCta.href} class="w-full">{contactCta.label}</Button>
+        </li>
+      </ul>
+    </Container>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const panel = document.getElementById('mobile-nav');
+  if (toggle && panel) {
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      panel.hidden = !open;
+    };
+    toggle.addEventListener('click', () => setOpen(panel.hidden));
+    panel.addEventListener('click', (e) => {
+      if ((e.target as Element).closest('a')) setOpen(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !panel.hidden) {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+  }
+</script>

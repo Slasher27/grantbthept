@@ -1,0 +1,26 @@
+---
+// Section primitive: consistent vertical rhythm + tone, content held in a Container.
+// `tone` gives the dark/light alternation the single-page home needs (specs/04).
+// Pass `labelledby` (a heading id) so anchored sections become named landmarks.
+import Container from './Container.astro';
+
+interface Props {
+  id?: string;
+  tone?: 'paper' | 'light' | 'dark';
+  labelledby?: string;
+  class?: string;
+}
+const { id, tone = 'paper', labelledby, class: className } = Astro.props;
+
+const tones = {
+  paper: 'bg-paper text-ink',
+  light: 'bg-surface text-ink',
+  dark: 'bg-dark text-paper',
+};
+---
+
+<section id={id} aria-labelledby={labelledby} class:list={['py-16 md:py-24', tones[tone]]}>
+  <Container class={className}>
+    <slot />
+  </Container>
+</section>

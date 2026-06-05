@@ -1,16 +1,55 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Section from '../../components/ui/Section.astro';
+import Button from '../../components/ui/Button.astro';
+import Breadcrumb from '../../components/blog/Breadcrumb.astro';
+import TransformationCard from '../../components/testimonials/TransformationCard.astro';
 import { getCollection } from 'astro:content';
 
 // Only consented testimonials publish (POPIA). The schema also enforces this.
-const testimonials = (await getCollection('testimonials')).filter(
-  (t) => t.data.consent === true,
-);
+// Featured first, then by manual order.
+const testimonials = (await getCollection('testimonials'))
+  .filter((t) => t.data.consent === true)
+  .sort(
+    (a, b) =>
+      (b.data.featured ? 1 : 0) - (a.data.featured ? 1 : 0) || a.data.order - b.data.order,
+  );
 ---
 
-<BaseLayout title="Testimonials — Grant Booysen PT">
-  <main>
-    <h1>Testimonials</h1>
-    <p>Phase 1 scaffold — testimonials placeholder ({testimonials.length} stories).</p>
-  </main>
+<BaseLayout
+  title="Client Transformations | Grant Booysen"
+  description="Real before-and-after results from clients who committed to sustainable training and nutrition coaching in Cape Town."
+>
+  <Section tone="paper">
+    <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Testimonials' }]} />
+    <h1 class="mt-6 text-2xl">Client Transformations</h1>
+    <p class="mt-4 max-w-2xl text-muted">
+      Real results from clients who put in the work. Every story here is shared with the
+      client&rsquo;s permission.
+    </p>
+
+    {
+      testimonials.length > 0 ? (
+        <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {testimonials.map((t) => (
+            <TransformationCard testimonial={t} />
+          ))}
+        </div>
+      ) : (
+        <p class="mt-12 text-muted">Transformation stories coming soon.</p>
+      )
+    }
+  </Section>
+
+  <Section tone="dark" class="text-center">
+    <h2 class="text-xl">Your transformation could be next</h2>
+    <p class="mx-auto mt-4 max-w-xl text-paper/80">
+      Personal training and lifestyle coaching built around your goals — in Cape Town or
+      coached remotely.
+    </p>
+    <div class="mt-8 flex flex-wrap justify-center gap-4">
+      <Button href="/#contact" variant="accent">Start today</Button>
+      <Button href="/#services" variant="outline">View services</Button>
+    </div>
+  </Section>
 </BaseLayout>

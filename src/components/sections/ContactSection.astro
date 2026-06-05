@@ -1,0 +1,83 @@
+---
+// Contact section (#contact): accessible form + details (specs/07).
+// DEMO WIRING: posts to Netlify Forms (data-netlify) with a honeypot — zero backend,
+// works on the Netlify demo. The spec's launch path is an Astro endpoint → Resend with
+// Altcha (specs/01); swap the form handler then. POPIA consent is required either way.
+// Phone + street address stay [VERIFY] placeholders, so only confirmed details show.
+import Section from '../ui/Section.astro';
+import Button from '../ui/Button.astro';
+import siteSettings from '../../content/singletons/site-settings.json';
+
+const { contactEmail, hours } = siteSettings;
+const hoursLines = hours.split('\n');
+
+const fieldClass =
+  'w-full rounded-[var(--radius)] border border-line bg-paper px-4 py-3 text-ink placeholder:text-muted';
+const labelClass = 'mb-2 block text-sm font-medium text-paper';
+---
+
+<Section id="contact" tone="dark" labelledby="contact-heading">
+  <div class="grid gap-10 md:grid-cols-2 md:gap-16">
+    <div>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Contact</p>
+      <h2 id="contact-heading" class="mt-3 text-xl">Ready to start?</h2>
+      <p class="mt-5 max-w-md text-paper/80">
+        Tell me about your goals and I&rsquo;ll get back to you about training in Cape Town or
+        remote coaching.
+      </p>
+
+      <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="mt-8 grid gap-5">
+        <input type="hidden" name="form-name" value="contact" />
+        <p class="hidden">
+          <label>Don&rsquo;t fill this out if you&rsquo;re human: <input name="bot-field" /></label>
+        </p>
+
+        <div>
+          <label for="name" class={labelClass}>Name</label>
+          <input id="name" name="name" type="text" required autocomplete="name" class={fieldClass} />
+        </div>
+        <div>
+          <label for="email" class={labelClass}>Email</label>
+          <input id="email" name="email" type="email" required autocomplete="email" class={fieldClass} />
+        </div>
+        <div>
+          <label for="subject" class={labelClass}>Subject</label>
+          <input id="subject" name="subject" type="text" class={fieldClass} />
+        </div>
+        <div>
+          <label for="message" class={labelClass}>Message</label>
+          <textarea id="message" name="message" rows="5" required class={fieldClass}></textarea>
+        </div>
+
+        <label class="flex items-start gap-3 text-sm text-paper/80">
+          <input type="checkbox" name="consent" required class="mt-1 accent-accent" />
+          <span>
+            I agree to my details being used to respond to my enquiry, as described in the
+            <a href="/privacy-policy/" class="text-paper underline decoration-accent underline-offset-2 hover:text-accent">privacy policy</a>.
+          </span>
+        </label>
+
+        <Button type="submit" variant="accent" class="justify-self-start">Send message</Button>
+      </form>
+    </div>
+
+    <dl class="grid gap-6 self-start text-sm md:pt-10">
+      <div>
+        <dt class="font-semibold text-paper">Email</dt>
+        <dd class="mt-1">
+          <a href={`mailto:${contactEmail}`} class="text-paper/80 hover:text-accent">{contactEmail}</a>
+        </dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-paper">Hours</dt>
+        <dd class="mt-1 text-paper/80">
+          {hoursLines.map((line) => <span class="block">{line}</span>)}
+        </dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-paper">Location</dt>
+        <dd class="mt-1 text-paper/80">Cape Town, South Africa</dd>
+      </div>
+    </dl>
+  </div>
+</Section>
