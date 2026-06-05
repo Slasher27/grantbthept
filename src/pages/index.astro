@@ -6,13 +6,15 @@ import Services from '../components/sections/Services.astro';
 import BlogPreview from '../components/sections/BlogPreview.astro';
 import Credentials from '../components/sections/Credentials.astro';
 import ContactSection from '../components/sections/ContactSection.astro';
+import { homeGraph } from '../lib/schema';
 
 const title = 'Personal Training & Lifestyle Coaching | Grant Booysen';
 const description =
   'One-on-one personal training, lifestyle and nutrition coaching, and corporate wellness in Cape Town with Grant Booysen, a REPSSA-registered trainer.';
+const schema = homeGraph(Astro.site!);
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} schema={schema}>
   <Hero />
   <About />
   <Services />

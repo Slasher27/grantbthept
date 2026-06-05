@@ -35,4 +35,5 @@ const { currentPage, totalPages, posts } = Astro.props;
   breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Latest News' }]}
   posts={posts}
   pager={{ currentPage, totalPages, basePath: '/news/' }}
+  collectionType="Blog"
 />

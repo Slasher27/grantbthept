@@ -5,6 +5,7 @@ import Button from '../../components/ui/Button.astro';
 import Breadcrumb from '../../components/blog/Breadcrumb.astro';
 import TransformationCard from '../../components/testimonials/TransformationCard.astro';
 import { getCollection } from 'astro:content';
+import { collectionGraph } from '../../lib/schema';
 
 // Only consented testimonials publish (POPIA). The schema also enforces this.
 // Featured first, then by manual order.
@@ -14,12 +15,18 @@ const testimonials = (await getCollection('testimonials'))
     (a, b) =>
       (b.data.featured ? 1 : 0) - (a.data.featured ? 1 : 0) || a.data.order - b.data.order,
   );
+
+const description =
+  'Real before-and-after results from clients who committed to sustainable training and nutrition coaching in Cape Town.';
+const schema = collectionGraph(Astro.site!, {
+  type: 'CollectionPage',
+  path: Astro.url.pathname,
+  name: 'Client Transformations',
+  description,
+});
 ---
 
-<BaseLayout
-  title="Client Transformations | Grant Booysen"
-  description="Real before-and-after results from clients who committed to sustainable training and nutrition coaching in Cape Town."
->
+<BaseLayout title="Client Transformations | Grant Booysen" description={description} schema={schema}>
   <Section tone="paper">
     <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Testimonials' }]} />
     <h1 class="mt-6 text-2xl">Client Transformations</h1>

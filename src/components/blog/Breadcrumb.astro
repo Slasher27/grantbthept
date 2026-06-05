@@ -1,6 +1,9 @@
 ---
 // Breadcrumb trail for blog pages (specs/07). The last item is the current page.
-// BreadcrumbList JSON-LD is emitted separately in the schema pass (specs/05).
+// Emits its own BreadcrumbList JSON-LD from the same items it renders, so the visible
+// trail and the schema can never drift — one per page (specs/05).
+import Schema from '../layout/Schema.astro';
+import { breadcrumbNode } from '../../lib/schema';
 interface Crumb {
   label: string;
   href?: string;
@@ -9,6 +12,12 @@ interface Props {
   items: Crumb[];
 }
 const { items } = Astro.props;
+
+// The current (last) crumb has no href in the UI; point its schema item at this page.
+const schemaItems = items.map((c, i) => ({
+  name: c.label,
+  item: c.href ?? (i === items.length - 1 ? Astro.url.pathname : undefined),
+}));
 ---
 
 <nav aria-label="Breadcrumb" class="text-sm text-muted">
@@ -31,3 +40,4 @@ const { items } = Astro.props;
     }
   </ol>
 </nav>
+<Schema graph={[breadcrumbNode(Astro.site!, schemaItems)]} />

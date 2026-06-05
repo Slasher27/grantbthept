@@ -1,0 +1,12 @@
+---
+// Single JSON-LD emitter (specs/05): takes a graph (array of schema.org nodes) and
+// writes one <script type="application/ld+json">. All nodes come from lib/schema.ts
+// so entities are described once and never hand-written in templates.
+interface Props {
+  graph: unknown[];
+}
+const { graph } = Astro.props;
+const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph });
+---
+
+<script type="application/ld+json" is:inline set:html={json} />

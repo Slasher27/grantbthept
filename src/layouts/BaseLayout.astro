@@ -4,6 +4,7 @@
 import '../styles/global.css';
 import { Font } from 'astro:assets';
 import BaseHead from '../components/layout/BaseHead.astro';
+import Schema from '../components/layout/Schema.astro';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 
@@ -12,6 +13,7 @@ interface Props {
   description?: string;
   image?: string;
   type?: 'website' | 'article';
+  schema?: unknown[];
 }
 
 const {
@@ -20,6 +22,7 @@ const {
     'Personal training, lifestyle coaching and corporate wellness in Cape Town with Grant Booysen, REPSSA-registered personal trainer.',
   image,
   type,
+  schema,
 } = Astro.props;
 ---
 
@@ -28,6 +31,7 @@ const {
   <head>
     <BaseHead title={title} description={description} image={image} type={type} />
     <Font cssVariable="--font-poppins" preload />
+    {schema && <Schema graph={schema} />}
   </head>
   <body>
     <a href="#main" class="skip-link">Skip to content</a>

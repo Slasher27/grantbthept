@@ -17,4 +17,5 @@ const totalPages = Math.ceil(posts.length / PAGE_SIZE) || 1;
   breadcrumb={[{ label: 'Home', href: '/' }, { label: 'Latest News' }]}
   posts={posts.slice(0, PAGE_SIZE)}
   pager={{ currentPage: 1, totalPages, basePath: '/news/' }}
+  collectionType="Blog"
 />

@@ -9,10 +9,11 @@ import Rating from '../../components/testimonials/Rating.astro';
 import BeforeAfter from '../../components/testimonials/BeforeAfter.astro';
 import { getCollection, render } from 'astro:content';
 import { PROGRAM_LABELS, testimonialSlug } from '../../lib/testimonials';
+import { reviewGraph } from '../../lib/schema';
 
 // Individual transformation story at /testimonials/<slug>/. Only consented entries
-// build (POPIA — the schema also enforces consent). Review/AggregateRating JSON-LD is
-// added in the schema pass (specs/05).
+// build (POPIA — the schema also enforces consent). Emits a Review of the business
+// (specs/05). AggregateRating is deferred until multiple real, consented ratings exist.
 export async function getStaticPaths() {
   const items = (await getCollection('testimonials')).filter((t) => t.data.consent === true);
   return items.map((t) => ({ params: { slug: testimonialSlug(t) }, props: { testimonial: t } }));
@@ -23,9 +24,15 @@ const { Content } = await render(testimonial);
 const { clientName, headline, summary, program, durationWeeks, beforeImage, afterImage, imageAlt, rating } =
   testimonial.data;
 const hasPair = beforeImage && afterImage;
+
+const schema = reviewGraph(Astro.site!, { clientName, headline, summary, rating });
 ---
 
-<BaseLayout title={`${headline} | Client Transformations | Grant Booysen`} description={summary}>
+<BaseLayout
+  title={`${headline} | Client Transformations | Grant Booysen`}
+  description={summary}
+  schema={schema}
+>
   <article>
     <Section tone="paper">
       <div class="mx-auto max-w-[70ch]">
