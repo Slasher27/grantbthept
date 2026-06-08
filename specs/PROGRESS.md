@@ -238,6 +238,11 @@ decision) — deferred by user. Otherwise the next move is **Phase 4 (QA/budgets
   page) — replace with a real consented story before launch, then add AggregateRating once ≥1 real
   rating exists. Still pending in Phase 3: `/rss.xml` + head `<link>`; Resend+Altcha contact backend;
   newsletter (needs provider); image assets + `[VERIFY]` facts.
+- 2026-06-08 — **Disabled syntax highlighting (Shiki vs CSP).** `npm run dev` warned that Shiki
+  colours code via inline styles incompatible with our CSP. No code content on this site, so set
+  `markdown: { syntaxHighlight: false }` — warning gone, CSP stays strict, rare code renders as
+  plain monospace (styled by Prose). Switch to `'prism'` (class-based, CSP-safe) only if code
+  content is ever needed. Build green.
 - 2026-06-08 — **Keystatic gated to dev-only (deployed /keystatic was broken).** On the first
   Netlify deploy, `/keystatic` showed unstyled + `api/keystatic/tree` 404s. Root cause: Keystatic
   is in **`local` storage mode**, which reads/writes the repo on disk — impossible on serverless;

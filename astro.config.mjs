@@ -52,6 +52,12 @@ export default defineConfig({
     }),
   ],
   vite: { plugins: [tailwindcss()] },
+  // No syntax highlighting: the default (Shiki) colours code via inline style attributes,
+  // which our CSP (style-src without 'unsafe-inline') blocks. This is a fitness/nutrition
+  // blog with no code blocks, so we disable it — keeping CSP strict. Rare code renders as
+  // plain monospace (styled by Prose). Switch to 'prism' (class-based, CSP-safe) only if
+  // code content is ever needed.
+  markdown: { syntaxHighlight: false },
   // Content-Security-Policy via Astro's CSP API (specs/06). For static output Astro
   // emits a per-page <meta http-equiv> with SHA-256 hashes for its own bundled scripts
   // and <style> blocks (no 'unsafe-inline'). We use no inline style attributes and the
