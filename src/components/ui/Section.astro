@@ -19,7 +19,12 @@ const tones = {
 };
 ---
 
-<section id={id} aria-labelledby={labelledby} class:list={['py-16 md:py-24', tones[tone]]}>
+<section
+  id={id}
+  aria-labelledby={labelledby}
+  class:list={['relative isolate py-16 md:py-24', tones[tone]]}
+>
+  <slot name="bg" />
   <Container class={className}>
     <slot />
   </Container>

@@ -238,6 +238,20 @@ decision) — deferred by user. Otherwise the next move is **Phase 4 (QA/budgets
   page) — replace with a real consented story before launch, then add AggregateRating once ≥1 real
   rating exists. Still pending in Phase 3: `/rss.xml` + head `<link>`; Resend+Altcha contact backend;
   newsletter (needs provider); image assets + `[VERIFY]` facts.
+- 2026-06-08 — **NAP facts wired + hero background image slot.** (a) Email → grant@grantbthept.co.za;
+  **phone removed** (not published) from schema/settings/Keystatic + specs; address confirmed
+  (Planet Fitness Plattekloof); geo looked up (-33.873037,18.578080); opening hours Mon–Fri 06:00–18:00
+  stored structured (single source) → drives contact display + new `openingHoursSpecification`.
+  LocalBusiness NAP now complete (only geo is a soft-confirm-vs-Maps). (b) **Hero background image:**
+  added `heroImage` to the homepage singleton (Keystatic → `src/assets/home/`), extended `Section`
+  with an optional full-bleed `bg` slot (relative isolate + `-z-10`), and wired `Hero.astro` to render
+  it as the LCP element (full-bleed `<Image>` + `bg-dark/70` overlay, `loading=eager` +
+  `fetchpriority=high`, decorative `alt=""`). New shared `lib/assets.ts` `resolveImage()` maps
+  Keystatic singleton image path-strings → ImageMetadata via `import.meta.glob` (eager) — reusable
+  for the still-unwired profile/service/credential/OG images (rule-of-three now met). Renders
+  text-only until a photo is uploaded. **TODO refinement:** `<link rel=preload>` for the hero (LCP)
+  not yet added — eager+fetchpriority only; add once a real asset exists + LCP is measured.
+  Build green, `astro check` 0/0/0, `npm run qa` 0/0.
 - 2026-06-08 — **Dev complete: lint cleanup, profile-image field, Phase 4 a11y QA (axe 0/CSP 0).**
   (a) **Lint → fully clean:** all 27 hints were the *same* `'z' is deprecated` warning in
   `content.config.ts` (the PROGRESS note about Tailwind canonical-class hints was stale).

@@ -134,6 +134,11 @@ export default config({
           label: 'Rotating service words',
           itemLabel: (props) => props.value,
         }),
+        heroImage: fields.image({
+          label: 'Hero background image',
+          directory: 'src/assets/home',
+          publicPath: '/src/assets/home/',
+        }),
         aboutBody: fields.text({ label: 'About-me body', multiline: true }),
         profileImage: fields.image({
           label: 'Profile photo',

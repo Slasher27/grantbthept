@@ -1,16 +1,36 @@
 ---
 // Dark hero: rotating service words (CSS-only, no JS), H1, subheading, two CTAs.
 // The rotator is decorative (aria-hidden) — the services are listed for real below.
+import { Image } from 'astro:assets';
 import Section from '../ui/Section.astro';
 import Button from '../ui/Button.astro';
 import homepage from '../../content/singletons/homepage.json';
+import { resolveImage } from '../../lib/assets';
 
 const { heroHeading, heroSubheading, rotatingWords } = homepage;
 // Duplicate the first word at the end so the CSS loop wraps seamlessly.
 const words = [...rotatingWords, rotatingWords[0]];
+// Optional hero background (LCP element). Renders text-only until a photo is uploaded.
+const heroImage = resolveImage(homepage.heroImage);
 ---
 
 <Section tone="dark" class="text-center">
+  {
+    heroImage && (
+      <Fragment slot="bg">
+        <Image
+          src={heroImage}
+          alt=""
+          widths={[640, 960, 1280, 1920]}
+          sizes="100vw"
+          loading="eager"
+          fetchpriority="high"
+          class="absolute inset-0 -z-10 h-full w-full object-cover"
+        />
+        <div class="absolute inset-0 -z-10 bg-dark/70" />
+      </Fragment>
+    )
+  }
   <div class="mx-auto max-w-3xl">
     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-paper/60">Specialising in</p>
 
