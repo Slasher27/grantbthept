@@ -4,9 +4,9 @@
 > session reads this + the repo to re-orient. Specs (`/specs`) = what to build;
 > `CLAUDE.md` = how to behave; this file = where we are + what we decided.
 
-**Last updated:** 2026-06-05
-**Current phase:** Phase 3 (pages + design) — templates + structured data complete; RSS and
-the contact/newsletter backend are the remaining Phase 3 items.
+**Last updated:** 2026-06-08
+**Current phase:** Phase 3 (pages + design) — templates, structured data + RSS complete; the
+contact/newsletter backend is the remaining Phase 3 item (deferred — needs provider decisions).
 **Last build:** ✓ green (`npm run build`) — clean rebuild. NOTE: on Windows a stale
 `.netlify/`+`dist/` cache makes the build fail with `Cannot find module …prerender-entry….mjs`;
 `rm -rf .netlify dist` before `npm run build` clears it. (See decisions below.)
@@ -110,8 +110,8 @@ Per `/specs/07-page-specs.md`, with `04` (design system), `05` (SEO/schema), `06
 3. ~~Structured data per page type.~~ ✓ **Done** — `lib/schema.ts` + `Schema.astro`, wired to
    every template (see session log). LocalBusiness NAP now ships dummy (user OK'd); real values +
    testimonials swap at production. Left to do: validate live in Rich Results Test after deploy.
-4. **`/rss.xml` + `<head>` `<link rel="alternate">`** (specs/05, 08) — last quick, unblocked
-   launch item. Adds `@astrojs/rss` (justified: spec requires the feed; hand-rolled XML is worse).
+4. ~~**`/rss.xml` + `<head>` `<link rel="alternate">`** (specs/05, 08).~~ ✓ **Done** (2026-06-08) —
+   `@astrojs/rss` endpoint + site-wide head link; build green, feed validated (see session log).
 5. Contact/newsletter backend — deferred by user (Resend after launch; newsletter needs a
    provider). Stays on the Netlify-Forms demo path.
 6. Hit the `06` budgets (Lighthouse, CWV, axe) on each template — Phase 4.
@@ -119,8 +119,10 @@ Per `/specs/07-page-specs.md`, with `04` (design system), `05` (SEO/schema), `06
 Follow the Minimal-code mandate. No Alpine until an interactive component genuinely needs it.
 
 ### Single next step
-Build **`/rss.xml`** (+ the head `<link>`) — see item 4. Everything after that is either
-deferred (backend) or a whole phase (Phase 4 QA/budgets).
+With RSS done, Phase 3's only remaining item is the **contact/newsletter backend** (Resend +
+Altcha endpoint replacing the Netlify-Forms demo path; newsletter still needs a provider
+decision) — deferred by user. Otherwise the next move is **Phase 4 (QA/budgets)**: run the
+`06` Lighthouse/axe/CWV budgets on each template, plus add `robots.txt` (specs/08 launch list).
 
 ---
 
@@ -227,4 +229,13 @@ deferred (backend) or a whole phase (Phase 4 QA/budgets).
   page) — replace with a real consented story before launch, then add AggregateRating once ≥1 real
   rating exists. Still pending in Phase 3: `/rss.xml` + head `<link>`; Resend+Altcha contact backend;
   newsletter (needs provider); image assets + `[VERIFY]` facts.
-- _(add new entries here each session)_
+- 2026-06-08 — **RSS feed + Header fix.** (a) Fixed the pre-existing `Header.astro:81` type
+  error (`setOpen(!!panel.hidden)` — coerce the now-`string|boolean` `HTMLElement.hidden`);
+  `astro check` is now **0 errors, 0 warnings, 27 hints** (clean baseline). (b) Built `/rss.xml`
+  via `@astrojs/rss` (`src/pages/rss.xml.ts`) — published posts newest-first, absolute
+  trailing-slash links via `lib/url.postUrl` + `id.split('/')[0]` (mirrors the post route),
+  descriptions from `excerpt`. File-extension route so `trailingSlash:'always'` doesn't apply;
+  verified NOT in the sitemap. Added the site-wide `<head>` `<link rel="alternate"
+  type="application/rss+xml">` in `BaseHead`. New dep `@astrojs/rss` justified: spec (05/08)
+  requires the feed; hand-rolled XML is worse. Build green; feed validated (5 items, valid
+  RSS 2.0, correct legacy date URLs + pubDates).

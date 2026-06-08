@@ -78,7 +78,7 @@ import { navLinks, contactCta } from '../../lib/nav';
       toggle.setAttribute('aria-expanded', String(open));
       panel.hidden = !open;
     };
-    toggle.addEventListener('click', () => setOpen(panel.hidden));
+    toggle.addEventListener('click', () => setOpen(!!panel.hidden));
     panel.addEventListener('click', (e) => {
       if ((e.target as Element).closest('a')) setOpen(false);
     });
