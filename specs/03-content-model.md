@@ -71,8 +71,8 @@ const testimonials = defineCollection({
   Source of truth so the home Services section and any future `/services/` page share it.
 - **`credentials`** — partner/cert logos (Precision Nutrition, Kettlebells for Africa,
   Advanced Coaching Academy, REPSSA, Virgin Active) with alt text + link.
-- **`siteSettings`** — name, tagline, contact email/phone `[VERIFY]`, hours, social
-  links, address/geo for LocalBusiness schema `[VERIFY]`, default OG image.
+- **`siteSettings`** — name, tagline, contact email, hours, social links, address/geo
+  for LocalBusiness schema `[VERIFY geo]`, default OG image. (Phone is not published.)
 
 ## Authoring rules (DRY content)
 

@@ -57,10 +57,20 @@ export function personNode(site: URL) {
 
 export function businessNode(site: URL) {
   const id = ids(site);
-  // NAP comes from site-settings.json. The phone/address/geo there are DUMMY [VERIFY]
-  // placeholders for now — Grant confirms the real values before production (specs/08).
-  const [streetAddress, addressLocality, postalCode] = siteSettings.address.split(', ');
-  const [latitude, longitude] = siteSettings.geo.split(',').map(Number);
+  // NAP from site-settings.json. Address = Grant's training location (confirmed).
+  // Parse "…street, locality, postalCode": the last two segments are locality + postal
+  // code, everything before is the street address (handles multi-part streets). Geo is
+  // omitted until real coords are confirmed — shipping coordinates that contradict the
+  // address is worse than none. Phone is deliberately NOT published (business decision).
+  const parts = siteSettings.address.split(', ');
+  const postalCode = parts.pop();
+  const addressLocality = parts.pop();
+  const streetAddress = parts.join(', ');
+  let geo;
+  if (siteSettings.geo) {
+    const [latitude, longitude] = siteSettings.geo.split(',').map(Number);
+    geo = { '@type': 'GeoCoordinates', latitude, longitude };
+  }
   return {
     '@type': ['LocalBusiness', 'HealthAndBeautyBusiness'],
     '@id': id.business,
@@ -68,7 +78,6 @@ export function businessNode(site: URL) {
     description: siteSettings.tagline,
     url: abs('/', site),
     email: siteSettings.contactEmail,
-    telephone: siteSettings.contactPhone,
     address: {
       '@type': 'PostalAddress',
       streetAddress,
@@ -76,7 +85,13 @@ export function businessNode(site: URL) {
       postalCode,
       addressCountry: 'ZA',
     },
-    geo: { '@type': 'GeoCoordinates', latitude, longitude },
+    geo,
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: siteSettings.openingHours.days,
+      opens: siteSettings.openingHours.opens,
+      closes: siteSettings.openingHours.closes,
+    },
     areaServed: { '@type': 'City', name: 'Cape Town' },
     founder: { '@id': id.person },
     sameAs: siteSettings.social.map((s) => s.url),

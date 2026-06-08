@@ -68,12 +68,22 @@ contact/newsletter backend, real image assets, `[VERIFY]` business facts, GSC UR
   rule (one astro process at a time → prevents EPERM file-lock errors).
 
 ## Open [VERIFY] items (need Grant before launch)
-> Heads-up: the `site-settings.json` **dummy** phone/address/geo + the current gmail now ship
-> **live in the LocalBusiness JSON-LD** (user OK'd dummy data for now). These MUST be replaced with
-> real values before production, or Google indexes fake NAP. `openingHours` is not yet in schema.
-- Phone number + physical training address + geo coords (LocalBusiness schema — currently dummy).
-- Confirmed opening hours (needed as a structured value to add `openingHoursSpecification`).
-- Domain email vs the current gmail (E-E-A-T) — gmail currently in schema + on the contact section.
+> Heads-up: LocalBusiness NAP is now mostly real. Email + **address confirmed**; **phone removed**
+> (not published, per Grant); **geo omitted** until real coords are confirmed (no contradictory
+> dummy coords ship). Still dummy/unconfirmed: geo coords + opening hours (`openingHours` not yet
+> in schema). Replace those before production or Google indexes incomplete/wrong NAP.
+- ~~Phone number~~ ✓ Removed 2026-06-08 — **not published** (Grant's decision); stripped from
+  schema, site-settings, Keystatic + specs.
+- ~~Physical training address~~ ✓ Confirmed 2026-06-08: **Planet Fitness Plattekloof, Bloulelie St,
+  Plattekloof Rd, Plattekloof Park, Cape Town, 7500** (in `site-settings.json` → contact + JSON-LD).
+- Geo coords — set 2026-06-08 to **-33.873037, 18.578080** (Planet Fitness Plattekloof, looked up
+  + triangulated from two sources; now in LocalBusiness JSON-LD). _Soft-confirm:_ Grant should
+  eyeball it against the Google Maps pin before launch, but it's the real gym location, not dummy.
+- ~~Confirmed opening hours~~ ✓ Set 2026-06-08: **Mon–Fri 06:00–18:00** ("for now"). Stored as
+  structured data in `site-settings.json` (single source) → drives both the contact-section display
+  ("Monday – Friday: 6am – 6pm") and the new LocalBusiness `openingHoursSpecification` node.
+- ~~Domain email vs the current gmail (E-E-A-T).~~ ✓ Confirmed 2026-06-08: **grant@grantbthept.co.za**
+  (set in `site-settings.json` → contact section, privacy policy, LocalBusiness JSON-LD; gmail removed).
 - Newsletter provider (Mailchimp / MailerLite / etc.).
 - Documented consent + a real consented story to replace the `sarah-m` **SAMPLE** testimonial
   (its Review JSON-LD ships now; `AggregateRating` stays off until ≥1 real rating exists).

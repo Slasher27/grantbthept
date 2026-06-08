@@ -9,8 +9,8 @@ sign-off before proceeding. Nothing in a later phase starts while an earlier gat
       the authoritative URL map (extends the table in `02`).
 - [ ] Export all post content + images from WordPress.
 - [ ] **Sample the live colour palette + fonts** (`04`); record real tokens.
-- [ ] Collect `[VERIFY]` business facts from Grant (phone, address/geo, hours, email,
-      newsletter provider, social, REPSSA profile link).
+- [ ] Collect `[VERIFY]` business facts from Grant (address/geo, hours, email,
+      newsletter provider, social, REPSSA profile link). (Phone is not published.)
 - **Gate A:** URL map reconciled and signed off; brand tokens confirmed; facts gathered.
 
 ## Phase 1 — Foundation

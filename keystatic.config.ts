@@ -199,9 +199,26 @@ export default config({
       schema: {
         name: fields.text({ label: 'Name' }),
         tagline: fields.text({ label: 'Tagline' }),
-        contactEmail: fields.text({ label: 'Contact email [VERIFY]' }),
-        contactPhone: fields.text({ label: 'Contact phone [VERIFY]' }),
-        hours: fields.text({ label: 'Hours', multiline: true }),
+        contactEmail: fields.text({ label: 'Contact email' }),
+        openingHours: fields.object(
+          {
+            days: fields.multiselect({
+              label: 'Open days',
+              options: [
+                { label: 'Monday', value: 'Monday' },
+                { label: 'Tuesday', value: 'Tuesday' },
+                { label: 'Wednesday', value: 'Wednesday' },
+                { label: 'Thursday', value: 'Thursday' },
+                { label: 'Friday', value: 'Friday' },
+                { label: 'Saturday', value: 'Saturday' },
+                { label: 'Sunday', value: 'Sunday' },
+              ],
+            }),
+            opens: fields.text({ label: 'Opens (24h, e.g. 06:00)' }),
+            closes: fields.text({ label: 'Closes (24h, e.g. 18:00)' }),
+          },
+          { label: 'Opening hours' }
+        ),
         social: fields.array(
           fields.object({
             platform: fields.text({ label: 'Platform' }),
@@ -209,8 +226,8 @@ export default config({
           }),
           { label: 'Social links', itemLabel: (props) => props.fields.platform.value },
         ),
-        address: fields.text({ label: 'Address [VERIFY]', multiline: true }),
-        geo: fields.text({ label: 'Geo (lat,lng) [VERIFY]' }),
+        address: fields.text({ label: 'Address', multiline: true }),
+        geo: fields.text({ label: 'Geo (lat,lng) [VERIFY] — leave blank until confirmed' }),
         ogImage: fields.image({
           label: 'Default OG image',
           directory: 'src/assets/og',

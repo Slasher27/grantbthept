@@ -46,7 +46,7 @@ templates (DRY, avoids drift).
 | Page | Schema |
 |------|--------|
 | Site-wide | `WebSite` (+ `SearchAction` if site search ships) and a single org/person node. |
-| Home / about | **`Person`** (Grant — name, jobTitle, knowsAbout, alumniOf/credentials, `sameAs`) **+ `LocalBusiness`/`HealthAndBeautyBusiness`** (name, areaServed: Cape Town, geo, hours, contact) `[VERIFY address/geo/phone]`. |
+| Home / about | **`Person`** (Grant — name, jobTitle, knowsAbout, alumniOf/credentials, `sameAs`) **+ `LocalBusiness`/`HealthAndBeautyBusiness`** (name, areaServed: Cape Town, geo, hours, email) `[VERIFY geo]`. (Phone is not published.) |
 | Services | `Service` nodes for the three offerings, `provider` → the Person/business. |
 | Blog post | **`Article`** (`BlogPosting`): headline, author (Person), datePublished, dateModified, image, mainEntityOfPage. Add **`FAQPage`** when `faq` present. |
 | Blog index/category | `Blog` / `CollectionPage` + `BreadcrumbList`. |

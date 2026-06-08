@@ -3,13 +3,22 @@
 // DEMO WIRING: posts to Netlify Forms (data-netlify) with a honeypot — zero backend,
 // works on the Netlify demo. The spec's launch path is an Astro endpoint → Resend with
 // Altcha (specs/01); swap the form handler then. POPIA consent is required either way.
-// Phone + street address stay [VERIFY] placeholders, so only confirmed details show.
+// Phone is intentionally not published. Only confirmed details (email, hours, area) show.
 import Section from '../ui/Section.astro';
 import Button from '../ui/Button.astro';
 import siteSettings from '../../content/singletons/site-settings.json';
 
-const { contactEmail, hours } = siteSettings;
-const hoursLines = hours.split('\n');
+const { contactEmail, openingHours } = siteSettings;
+// Display string derived from the structured hours (same source as the schema's
+// openingHoursSpecification, so they can't drift). "06:00" → "6am", contiguous days → range.
+const fmtTime = (t: string) => {
+  const [h, m] = t.split(':').map(Number);
+  const period = h < 12 ? 'am' : 'pm';
+  const h12 = h % 12 || 12;
+  return m ? `${h12}:${String(m).padStart(2, '0')}${period}` : `${h12}${period}`;
+};
+const { days } = openingHours;
+const hoursDisplay = `${days[0]} – ${days[days.length - 1]}: ${fmtTime(openingHours.opens)} – ${fmtTime(openingHours.closes)}`;
 
 const fieldClass =
   'w-full rounded-[var(--radius)] border border-line bg-paper px-4 py-3 text-ink placeholder:text-muted';
@@ -70,9 +79,7 @@ const labelClass = 'mb-2 block text-sm font-medium text-paper';
       </div>
       <div>
         <dt class="font-semibold text-paper">Hours</dt>
-        <dd class="mt-1 text-paper/80">
-          {hoursLines.map((line) => <span class="block">{line}</span>)}
-        </dd>
+        <dd class="mt-1 text-paper/80">{hoursDisplay}</dd>
       </div>
       <div>
         <dt class="font-semibold text-paper">Location</dt>

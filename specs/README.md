@@ -48,8 +48,10 @@ Claude Code. Read `CLAUDE.md` first, then work through the numbered docs in orde
 - Credentials: Loots Academy (Gym Mgmt/Instructor), Precision Nutrition, Kettlebells for
   Africa, ETA Sports Massage, Spinning (Loots), Advanced Coaching Academy (Phil Learney).
 - Hours: Mon–Fri 7am–7pm, Weekend 10am–5pm. `[VERIFY]`
-- Email: grant.booysen@gmail.com `[VERIFY — consider a domain email for E-E-A-T]`
-- Phone / physical training location: `[VERIFY — needed for LocalBusiness schema]`
+- Email: grant@grantbthept.co.za ✓ confirmed.
+- Training location: Planet Fitness Plattekloof — Bloulelie St, Plattekloof Rd, Plattekloof
+  Park, Cape Town, 7500. ✓ confirmed. Geo coords still `[VERIFY]`.
+- Phone: not published (business decision).
 
 > Convention: anything not confirmed by Grant carries a `[VERIFY]` flag in content and
 > must be resolved at a human acceptance gate before launch. Never invent facts.

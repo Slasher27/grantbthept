@@ -1,14 +1,17 @@
 {
   "name": "Grant Booysen Personal Trainer",
   "tagline": "Personal training, lifestyle coaching and corporate wellness",
-  "contactEmail": "grant.booysen@gmail.com",
-  "contactPhone": "+27 21 000 0000",
-  "hours": "Monday to Friday: 7am – 7pm\nWeekend: 10am – 5pm",
+  "contactEmail": "grant@grantbthept.co.za",
+  "openingHours": {
+    "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    "opens": "06:00",
+    "closes": "18:00"
+  },
   "social": [
     { "platform": "Instagram", "url": "https://www.instagram.com/grantbthept/" },
     { "platform": "Facebook", "url": "https://www.facebook.com/grantbthept/" }
   ],
-  "address": "123 Example Street, Cape Town, 8001",
-  "geo": "-33.9249,18.4241",
+  "address": "Planet Fitness Plattekloof, Bloulelie St, Plattekloof Rd, Plattekloof Park, Cape Town, 7500",
+  "geo": "-33.873037,18.578080",
   "ogImage": null
 }
