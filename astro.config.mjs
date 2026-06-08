@@ -47,4 +47,10 @@ export default defineConfig({
     }),
   ],
   vite: { plugins: [tailwindcss()] },
+  // Content-Security-Policy via Astro's CSP API (specs/06). For static output Astro
+  // emits a per-page <meta http-equiv> with SHA-256 hashes for its own bundled scripts
+  // and <style> blocks (no 'unsafe-inline'). We use no inline style attributes and the
+  // only inline <script> is JSON-LD (a data block, not script-src governed), so the
+  // default policy is sufficient; images/fonts have no default-src restriction.
+  security: { csp: true },
 });

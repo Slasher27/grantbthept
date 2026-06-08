@@ -10,7 +10,9 @@
   --color-line:       #dfdfe2;   /* hairlines / borders (palette-5) */
   --color-accent:     #fd5a37;   /* single energetic accent — brand red-orange (palette-1).
                                     3:1 on white → fills/detail/hover, not small body text. */
-  --color-accent-ink: #ffffff;   /* text on accent */
+  --color-accent-ink: #ffffff;   /* text on the bright accent fill */
+  --color-accent-strong: #c2410c; /* AA-safe accent (~5:1 on paper / under white):
+                                     small accent TEXT on light bg, or fill behind white text. */
   --color-dark:       #030306;   /* dark hero/footer bg (palette-4) */
 
   /* Brand font: Poppins (live --theme-font-family) — self-hosted via the Astro Fonts API

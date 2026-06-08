@@ -8,9 +8,14 @@ import Button from '../ui/Button.astro';
 import { navLinks, contactCta } from '../../lib/nav';
 ---
 
-<header class="sticky top-0 z-50 border-b border-line bg-paper/90 backdrop-blur">
+<header
+  data-header
+  class="group sticky top-0 z-50 border-b border-line bg-paper/90 backdrop-blur transition-shadow data-[scrolled]:shadow-md"
+>
   <Container>
-    <div class="flex items-center justify-between gap-4 py-4">
+    <div
+      class="flex items-center justify-between gap-4 py-4 transition-[padding] group-data-[scrolled]:py-2"
+    >
       <a href="/" class="text-lg font-bold tracking-tight text-ink">Grant Booysen</a>
 
       <nav class="hidden items-center gap-8 md:flex" aria-label="Primary">
@@ -71,6 +76,13 @@ import { navLinks, contactCta } from '../../lib/nav';
 </header>
 
 <script>
+  const header = document.querySelector('[data-header]');
+  if (header) {
+    const onScroll = () => header.toggleAttribute('data-scrolled', window.scrollY > 4);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
   const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
   const panel = document.getElementById('mobile-nav');
   if (toggle && panel) {

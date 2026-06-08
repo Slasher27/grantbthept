@@ -135,6 +135,12 @@ export default config({
           itemLabel: (props) => props.value,
         }),
         aboutBody: fields.text({ label: 'About-me body', multiline: true }),
+        profileImage: fields.image({
+          label: 'Profile photo',
+          directory: 'src/assets/profile',
+          publicPath: '/src/assets/profile/',
+        }),
+        profileAlt: fields.text({ label: 'Profile photo alt text' }),
         ctaPrimaryLabel: fields.text({ label: 'Primary CTA label' }),
         ctaSecondaryLabel: fields.text({ label: 'Secondary CTA label' }),
       },

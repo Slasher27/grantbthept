@@ -1,0 +1,9 @@
+# Security headers (specs/06). CSP is emitted by Astro's CSP API (astro.config.mjs);
+# these are the remaining response headers Netlify applies to every route.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Content-Type-Options = "nosniff"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"

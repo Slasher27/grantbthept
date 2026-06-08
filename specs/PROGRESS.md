@@ -5,8 +5,11 @@
 > `CLAUDE.md` = how to behave; this file = where we are + what we decided.
 
 **Last updated:** 2026-06-08
-**Current phase:** Phase 3 (pages + design) — templates, structured data + RSS complete; the
-contact/newsletter backend is the remaining Phase 3 item (deferred — needs provider decisions).
+**Current phase:** Phase 3→4. All **dev-only** work is complete: pages, structured data, RSS,
+CSP + security headers, header scroll-condense, profile-image field, lint clean, and a Phase 4
+a11y QA pass (axe 0 / CSP 0 across all 11 templates). Remaining items are launch-gated, NOT dev:
+contact/newsletter backend, real image assets, `[VERIFY]` business facts, GSC URL parity, CI.
+**Build state:** `astro check` 0/0/0; `npm run build` green; `npm run qa` 0 axe / 0 console.
 **Last build:** ✓ green (`npm run build`) — clean rebuild. NOTE: on Windows a stale
 `.netlify/`+`dist/` cache makes the build fail with `Cannot find module …prerender-entry….mjs`;
 `rm -rf .netlify dist` before `npm run build` clears it. (See decisions below.)
@@ -79,17 +82,13 @@ contact/newsletter backend is the remaining Phase 3 item (deferred — needs pro
 
 ## Known bugs & fixes required (pick up next session)
 
-> Run `npx astro check` at the start of a session to see the live list. As of 2026-06-05:
-> **1 error, 0 warnings, 27 hints.** None are from the JSON-LD pass.
+> Run `npx astro check` at the start of a session to see the live list. As of 2026-06-08:
+> **0 errors, 0 warnings, 0 hints** (fully clean). `npm run qa` = 0 axe / 0 console.
 
-- **[BUG] `Header.astro:81` — type error (blocks a clean `astro check`).** `setOpen(panel.hidden)`:
-  the DOM lib now types `HTMLElement.hidden` as `string | boolean` (it reflects `hidden="until-found"`),
-  but `setOpen(open: boolean)` wants a boolean. Runtime behaviour is correct; it's type-only.
-  Fix: coerce — `setOpen(!!panel.hidden)`. Pre-existing (mobile-nav toggle), not from this session.
-- **[LINT] `content.config.ts` — `z` is deprecated (ts 6385).** `z` re-exported from `astro:content`
-  is deprecated. Low priority; migrate to the recommended import when convenient.
-- **[LINT] 27 Tailwind "canonical class" hints** across templates (`aspect-[16/10]`→`aspect-16/10`,
-  `rounded-[var(--radius)]`→`rounded-(--radius)`). Cosmetic; optional normalization pass.
+- ~~**[BUG] `Header.astro:81` — type error.**~~ ✓ Fixed 2026-06-08 (`setOpen(!!panel.hidden)`).
+- ~~**[LINT] `content.config.ts` — `z` is deprecated.**~~ ✓ Fixed 2026-06-08 (import `z` from
+  `astro/zod`). This was the source of all 27 hints — the "Tailwind canonical class" note below
+  was stale; there were no Tailwind hints.
 - **[SCHEMA, minor] dangling `isPartOf` `@id`.** `collectionGraph` sets `isPartOf:{@id:#website}`,
   but the `WebSite` node is only emitted on the home page → the ref is unresolved on archive pages.
   Harmless (CollectionPage/Blog aren't validated rich types; Google reconciles `@id` site-wide), but
@@ -229,6 +228,48 @@ decision) — deferred by user. Otherwise the next move is **Phase 4 (QA/budgets
   page) — replace with a real consented story before launch, then add AggregateRating once ≥1 real
   rating exists. Still pending in Phase 3: `/rss.xml` + head `<link>`; Resend+Altcha contact backend;
   newsletter (needs provider); image assets + `[VERIFY]` facts.
+- 2026-06-08 — **Dev complete: lint cleanup, profile-image field, Phase 4 a11y QA (axe 0/CSP 0).**
+  (a) **Lint → fully clean:** all 27 hints were the *same* `'z' is deprecated` warning in
+  `content.config.ts` (the PROGRESS note about Tailwind canonical-class hints was stale).
+  Fixed by importing `z` from `astro/zod` instead of the deprecated `astro:content` re-export.
+  `astro check` is now **0 errors / 0 warnings / 0 hints**. (b) **Profile-image field** added to
+  the homepage singleton (`keystatic.config.ts` `profileImage` + `profileAlt`; `homepage.json`
+  keys null) — closes the noted content-model gap so Grant can upload via CMS. Render (asymmetric
+  About layout) lands WITH the asset, same deferred pattern as the Services/Credentials singleton
+  images — no single-use `import.meta.glob` machinery added (minimal-code mandate). (c) **Phase 4
+  a11y QA harness** (`scripts/qa.mjs`, `npm run qa`): serves `dist/` statically + drives it with
+  Playwright, runs **axe-core (WCAG 2.2 AA)** + captures console/CSP errors on one URL per template
+  (11 routes). Justifies new devDeps `playwright` + `@axe-core/playwright` (specs/06+08 require axe
+  in CI — this is that gate). First run found **9 violations**, all fixed:
+  • Rating `<div>` had `aria-label` with no role (`aria-prohibited-attr`) → added `role="img"`.
+  • Accent contrast: bright brand accent `#fd5a37` is only ~3.1:1 on white, so small `text-accent`
+    eyebrow labels (light sections + 404) + the "Read story" link + white-on-`bg-accent` Before/After
+    badges all failed AA. Added one AA-safe token `--color-accent-strong: #c2410c` (~5:1) and applied
+    it surgically: light-bg eyebrows + Read-story → `text-accent-strong`; Before/After badge →
+    `bg-accent-strong` (white now 5.2:1). **Dark-section accent (Contact eyebrow, Hero rotator) left
+    bright** — it passes at 6.6:1 on `#030306` and darkening would BREAK it. This matches the design's
+    own documented rule ("accent for fills/detail/hover, not small text"). **Design note for review
+    (non-blocking):** small accent text/badges on light are now a deeper orange; bright accent
+    unchanged for fills/buttons/hover/icons. Re-run: **0 axe violations, 0 console errors, 0 CSP
+    violations across all 11 templates** → CSP is runtime-verified clean (the local 404s were the
+    production-only Netlify Image CDN, excluded). Minor deferred: `hover:text-accent` on light bgs is
+    ~3:1 on hover only (not axe-flagged, transient); revisit if a reviewer flags it.
+- 2026-06-08 — **CSP + security headers + header scroll-condense (Phase 4 prep, dev-only).**
+  (a) **CSP** via Astro 6's `security: { csp: true }` (NOT `experimental` — it graduated in
+  Astro 6) in `astro.config.mjs` — emits a per-page `<meta http-equiv="content-security-policy">`
+  with SHA-256 hashes for Astro's inline `type="module"` script + inline `<style>` blocks,
+  `'self'` for the external stylesheet, `font-src 'self'` (self-hosted Poppins). No
+  `default-src`/`img-src` → Netlify Image CDN + images stay unrestricted. Safe because the
+  repo has zero inline `style=` attributes and the only inline `<script>` is JSON-LD (a data
+  block, not script-src governed). (b) **Security headers** in a new `netlify.toml`
+  (`Referrer-Policy`, `X-Content-Type-Options: nosniff`, `Permissions-Policy` locking
+  camera/mic/geo, HSTS 2y preload). (c) **Header condenses on scroll** (specs/07 #1): vanilla
+  scroll listener toggles `data-scrolled` on `<header>` past 4px; Tailwind `data-[scrolled]:`
+  + `group-data-[scrolled]:` variants shrink padding (py-4→py-2) + add shadow, `transition-*`
+  for smoothness (global reduced-motion rule already neutralises it — no per-element variant).
+  Build green; verified CSP meta + compiled scroll CSS in `dist`. `astro check`: 0 errors.
+  **NOT runtime-verified in a browser** — CSP console-violation check + the Lighthouse/axe pass
+  are the next step (needs a preview + browser). 27 cosmetic lint hints still deferred.
 - 2026-06-08 — **RSS feed + Header fix.** (a) Fixed the pre-existing `Header.astro:81` type
   error (`setOpen(!!panel.hidden)` — coerce the now-`string|boolean` `HTMLElement.hidden`);
   `astro check` is now **0 errors, 0 warnings, 27 hints** (clean baseline). (b) Built `/rss.xml`
