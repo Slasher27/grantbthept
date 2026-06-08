@@ -238,6 +238,18 @@ decision) — deferred by user. Otherwise the next move is **Phase 4 (QA/budgets
   page) — replace with a real consented story before launch, then add AggregateRating once ≥1 real
   rating exists. Still pending in Phase 3: `/rss.xml` + head `<link>`; Resend+Altcha contact backend;
   newsletter (needs provider); image assets + `[VERIFY]` facts.
+- 2026-06-08 — **Keystatic gated to dev-only (deployed /keystatic was broken).** On the first
+  Netlify deploy, `/keystatic` showed unstyled + `api/keystatic/tree` 404s. Root cause: Keystatic
+  is in **`local` storage mode**, which reads/writes the repo on disk — impossible on serverless;
+  the admin can't function deployed (and CSP also blocks its CSS-in-JS + Google-Fonts UI). Fix:
+  include the `keystatic()` integration **only when `isDev`** (`astro.config.mjs`), so production
+  ships no admin route — no broken, publicly-exposed `/keystatic`. Editing stays local (dev +
+  commit), unchanged. Verified: prod build emits no `/keystatic` page, no keystatic function, no
+  redirects; `astro check` 0/0/0; build green. **Action for user:** commit + redeploy so the live
+  `/keystatic` becomes a clean 404. **Future (live editing):** wire **Keystatic Cloud** (storage
+  `cloud` + project + invite Grant) — at which point `/keystatic` needs a CSP exception (it needs
+  `style-src 'unsafe-inline'` + `fonts.googleapis.com`; Astro's global CSP can't scope per-route,
+  so likely exclude that route from the CSP meta or serve a relaxed policy for it).
 - 2026-06-08 — **Contact form: branded inline success (kept Netlify Forms).** User chose to keep
   Netlify Forms but wanted an on-brand "message sent" confirmation instead of Netlify's default page.
   Added a vanilla AJAX submit in `ContactSection` (fetch → Netlify, still real Netlify Forms +

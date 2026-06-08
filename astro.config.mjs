@@ -40,7 +40,12 @@ export default defineConfig({
   integrations: [
     react(),
     mdx(),
-    keystatic(),
+    // Keystatic runs in `local` storage mode — it reads/writes the repo on disk, which
+    // only works in `astro dev`. On a deployed (serverless) host its API 404s and the
+    // admin can't function, so we ship it in dev ONLY: no broken, publicly-exposed
+    // /keystatic in production. Content editing is local (dev + commit). Switching to
+    // Keystatic Cloud later re-enables live editing (and needs a CSP exception for it).
+    ...(isDev ? [keystatic()] : []),
     sitemap({
       // Keep the CMS admin and its API out of the sitemap.
       filter: (page) => !page.includes('/keystatic') && !page.includes('/api/keystatic'),
