@@ -1,6 +1,9 @@
 ---
 // The single owner of per-page <head> SEO: title, description, self-canonical
 // (absolute www URL with trailing slash), Open Graph + Twitter. (specs/05)
+import siteSettings from '../../content/singletons/site-settings.json';
+import { resolveImage } from '../../lib/assets';
+
 interface Props {
   title: string;
   description: string;
@@ -10,7 +13,14 @@ interface Props {
 const { title, description, image, type = 'website' } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
-const ogImage = image ? new URL(image, Astro.site).href : undefined;
+
+// OG image: the page's own image if given, else the site default (siteSettings.ogImage).
+// Keystatic may drop the key when empty, so access it defensively. The default carries
+// intrinsic dimensions; per-page images are passed as a bare src (no dims).
+const defaultOg = resolveImage((siteSettings as { ogImage?: string | null }).ogImage);
+const ogSrc = image ?? defaultOg?.src;
+const ogImage = ogSrc ? new URL(ogSrc, Astro.site).href : undefined;
+const ogDims = !image && defaultOg ? { w: defaultOg.width, h: defaultOg.height } : undefined;
 const siteName = 'Grant Booysen Personal Trainer';
 ---
 
@@ -33,6 +43,8 @@ const siteName = 'Grant Booysen Personal Trainer';
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
 {ogImage && <meta property="og:image" content={ogImage} />}
+{ogDims && <meta property="og:image:width" content={String(ogDims.w)} />}
+{ogDims && <meta property="og:image:height" content={String(ogDims.h)} />}
 
 <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
 <meta name="twitter:title" content={title} />

@@ -3,15 +3,27 @@
   "tagline": "Personal training, lifestyle coaching and corporate wellness",
   "contactEmail": "grant@grantbthept.co.za",
   "openingHours": {
-    "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    "days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday"
+    ],
     "opens": "06:00",
     "closes": "18:00"
   },
   "social": [
-    { "platform": "Instagram", "url": "https://www.instagram.com/grantbthept/" },
-    { "platform": "Facebook", "url": "https://www.facebook.com/grantbthept/" }
+    {
+      "platform": "Instagram",
+      "url": "https://www.instagram.com/grantbthept/"
+    },
+    {
+      "platform": "Facebook",
+      "url": "https://www.facebook.com/grantbthept/"
+    }
   ],
   "address": "Planet Fitness Plattekloof, Bloulelie St, Plattekloof Rd, Plattekloof Park, Cape Town, 7500",
   "geo": "-33.873037,18.578080",
-  "ogImage": null
+  "ogImage": "/src/assets/og/ogImage.jpg"
 }

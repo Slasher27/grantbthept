@@ -1,9 +1,10 @@
 // Primary navigation — single source of truth, shared by the header and footer.
 // Home-page section anchors are absolute (`/#id`) so they resolve from any page
 // and preserve the live anchors (#about-me, #services, #contact — specs/02, 07).
+// "About" links to the dedicated /about/ page; the homepage keeps its #about-me teaser.
 export const navLinks = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '/#about-me' },
+  { label: 'About', href: '/about/' },
   { label: 'Services', href: '/#services' },
   { label: 'Latest News', href: '/news/' },
   { label: 'Testimonials', href: '/testimonials/' },

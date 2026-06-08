@@ -42,6 +42,7 @@ A request to `/news` (no slash) must `301` → `/news/`, never serve a duplicate
 | **NEW** Testimonials | `/testimonials/` | `src/pages/testimonials/index.astro`. |
 | **NEW** Testimonial story | `/testimonials/<slug>/` | `src/pages/testimonials/[slug].astro` — one per consented entry. |
 | **NEW** Privacy | `/privacy-policy/` | `src/pages/privacy-policy/index.astro` (POPIA — see 05). |
+| **NEW** About | `/about/` | `src/pages/about/index.astro` — detailed bio (Person schema). Home keeps the `#about-me` teaser; nav "About" points here. |
 
 ### Known post URLs (seed the mapping; confirm full list from GSC)
 

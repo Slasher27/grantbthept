@@ -8,7 +8,8 @@ import { chromium } from 'playwright';
 import { AxeBuilder } from '@axe-core/playwright';
 
 const DIST = join(process.cwd(), 'dist');
-const PORT = 4321;
+// Not 4321 — that's astro dev/preview; colliding would silently test the dev server.
+const PORT = 4399;
 
 const TYPES = {
   '.html': 'text/html',
@@ -43,6 +44,7 @@ const server = createServer(async (req, res) => {
 // One representative URL per template type (specs/07).
 const ROUTES = [
   ['home', '/'],
+  ['about', '/about/'],
   ['news (archive)', '/news/'],
   ['post', '/2023/06/05/motivation/'],
   ['post (nutrition+faq)', '/2022/09/16/healthy-eating-plan/'],

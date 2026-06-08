@@ -68,6 +68,40 @@ const labelClass = 'mb-2 block text-sm font-medium text-paper';
 
         <Button type="submit" variant="accent" class="justify-self-start">Send message</Button>
       </form>
+
+      <div
+        data-form-success
+        hidden
+        tabindex="-1"
+        role="status"
+        aria-live="polite"
+        class="mt-8 flex items-start gap-3 rounded-(--radius) border border-paper/20 bg-paper/5 p-6 text-paper"
+      >
+        <svg
+          aria-hidden="true"
+          class="mt-0.5 shrink-0 text-accent"
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+        <p>Thanks &mdash; your message has been sent. I&rsquo;ll be in touch soon.</p>
+      </div>
+
+      <p data-form-error hidden role="alert" class="mt-4 text-sm text-paper/90">
+        Something went wrong sending your message. Please email
+        <a
+          href={`mailto:${contactEmail}`}
+          class="underline decoration-accent underline-offset-2 hover:text-accent"
+          >{contactEmail}</a
+        > directly.
+      </p>
     </div>
 
     <dl class="grid gap-6 self-start text-sm md:pt-10">
@@ -88,3 +122,34 @@ const labelClass = 'mb-2 block text-sm font-medium text-paper';
     </dl>
   </div>
 </Section>
+
+<script>
+  // Submit the contact form to Netlify Forms via fetch so the visitor stays on the page
+  // and sees an inline, on-brand confirmation (announced via the success panel's
+  // aria-live). Native `required`/email validation runs first (submit only fires when
+  // valid). With no JS, the form falls back to a normal POST → Netlify's default page.
+  const form = document.querySelector<HTMLFormElement>('form[name="contact"]');
+  const success = document.querySelector<HTMLElement>('[data-form-success]');
+  const error = document.querySelector<HTMLElement>('[data-form-error]');
+  if (form && success && error) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      error.hidden = true;
+      const params = new URLSearchParams();
+      for (const [key, value] of new FormData(form).entries()) params.append(key, String(value));
+      try {
+        const res = await fetch(location.pathname, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString(),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        form.hidden = true;
+        success.hidden = false;
+        success.focus();
+      } catch {
+        error.hidden = false;
+      }
+    });
+  }
+</script>

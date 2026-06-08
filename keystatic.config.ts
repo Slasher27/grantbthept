@@ -139,15 +139,37 @@ export default config({
           directory: 'src/assets/home',
           publicPath: '/src/assets/home/',
         }),
-        aboutBody: fields.text({ label: 'About-me body', multiline: true }),
+        ctaPrimaryLabel: fields.text({ label: 'Primary CTA label' }),
+        ctaSecondaryLabel: fields.text({ label: 'Secondary CTA label' }),
+      },
+    }),
+
+    about: singleton({
+      label: 'About page',
+      path: 'src/content/singletons/about',
+      format: { data: 'json' },
+      schema: {
+        summary: fields.text({
+          label: 'Summary (homepage teaser)',
+          multiline: true,
+        }),
         profileImage: fields.image({
           label: 'Profile photo',
           directory: 'src/assets/profile',
           publicPath: '/src/assets/profile/',
         }),
         profileAlt: fields.text({ label: 'Profile photo alt text' }),
-        ctaPrimaryLabel: fields.text({ label: 'Primary CTA label' }),
-        ctaSecondaryLabel: fields.text({ label: 'Secondary CTA label' }),
+        intro: fields.text({
+          label: 'Intro (lead paragraphs on the About page)',
+          multiline: true,
+        }),
+        sections: fields.array(
+          fields.object({
+            heading: fields.text({ label: 'Heading' }),
+            body: fields.text({ label: 'Body', multiline: true }),
+          }),
+          { label: 'Sections', itemLabel: (props) => props.fields.heading.value }
+        ),
       },
     }),
 

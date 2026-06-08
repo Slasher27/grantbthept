@@ -2,11 +2,19 @@
 // Services section (#services): three offerings from the services singleton.
 // Service schema is added in the structured-data pass. Card images are optional —
 // rendered only once the assets exist.
+import { Image } from 'astro:assets';
 import Section from '../ui/Section.astro';
 import Card from '../ui/Card.astro';
 import Button from '../ui/Button.astro';
 import { contactCta } from '../../lib/nav';
+import { resolveImage } from '../../lib/assets';
 import services from '../../content/singletons/services.json';
+
+// Keystatic drops empty optional fields on save, so `image` may be absent per item.
+const items = services.items.map((s) => ({
+  ...s,
+  img: resolveImage((s as { image?: string | null }).image),
+}));
 ---
 
 <Section id="services" tone="light" labelledby="services-heading">
@@ -17,8 +25,17 @@ import services from '../../content/singletons/services.json';
 
   <div class="mt-12 grid gap-6 md:grid-cols-3">
     {
-      services.items.map((s) => (
+      items.map((s) => (
         <Card class="flex flex-col p-6 md:p-8">
+          {s.img && (
+            <Image
+              src={s.img}
+              alt=""
+              widths={[400, 600, 800]}
+              sizes="(min-width: 768px) 30vw, 90vw"
+              class="mb-6 aspect-3/2 w-full rounded-(--radius) object-cover"
+            />
+          )}
           <h3 class="text-lg font-bold">{s.title}</h3>
           <p class="mt-3 text-sm text-muted">{s.blurb}</p>
           <ul class="mt-5 flex flex-col gap-3 text-sm">

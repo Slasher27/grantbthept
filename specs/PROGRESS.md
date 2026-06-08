@@ -238,7 +238,46 @@ decision) — deferred by user. Otherwise the next move is **Phase 4 (QA/budgets
   page) — replace with a real consented story before launch, then add AggregateRating once ≥1 real
   rating exists. Still pending in Phase 3: `/rss.xml` + head `<link>`; Resend+Altcha contact backend;
   newsletter (needs provider); image assets + `[VERIFY]` facts.
-- 2026-06-08 — **NAP facts wired + hero background image slot.** (a) Email → grant@grantbthept.co.za;
+- 2026-06-08 — **Contact form: branded inline success (kept Netlify Forms).** User chose to keep
+  Netlify Forms but wanted an on-brand "message sent" confirmation instead of Netlify's default page.
+  Added a vanilla AJAX submit in `ContactSection` (fetch → Netlify, still real Netlify Forms +
+  honeypot): on success it hides the form and reveals an inline **success panel** (`role="status"`
+  `aria-live="polite"`, focus moved to it — finally delivers the spec's aria-live success state); on
+  failure an `role="alert"` **error panel** with a mailto fallback. Native `required`/email validation
+  still runs first; **no-JS falls back** to a normal POST → Netlify's default page. CSP hashed the new
+  inline script (verified, 0 console violations). `astro check` 0/0/0, build green, QA 0/0 (12 templates).
+  **Also fixed the QA harness:** moved its static server off port 4321 → 4399 so it can't collide with a
+  running `astro dev` (which had made it silently test the dev server). **Can't be tested locally** —
+  Netlify Forms only records on the deployed site; after deploy, do a test submit + set a notification
+  email (Netlify → Forms) to grant@grantbthept.co.za.
+- 2026-06-08 — **About split: homepage teaser + new `/about/` page (user request — bio was a wall
+  of text).** New **`about` singleton** (Keystatic: `summary`, `profileImage`/`profileAlt`, `intro`,
+  `sections[]{heading,body}`) — bio migrated out of the homepage singleton (removed `aboutBody`/
+  `profileImage`/`profileAlt` from homepage + its JSON), seeded into `about.json` restructured into
+  sections (My journey → Certifications → Beyond the conventional → My philosophy). Homepage `About`
+  is now a **compact teaser** (photo + summary + "Read my full story" → `/about/`, keeps `#about-me`
+  anchor). New **`/about/`** route (`src/pages/about/index.astro`, additive — added to specs/02):
+  intro + section headings + sticky portrait + reused Credentials strip + contact CTA, **Person
+  schema** (E-E-A-T) + breadcrumb, one h1. Nav "About" now → `/about/`. QA route list + run extended
+  to 12 templates: **0 a11y / 0 CSP**; `astro check` 0/0/0; build green. **Drafted content for review:**
+  the homepage `summary` is my condensation of Grant's bio — Grant should refine it in Keystatic.
+  **Note:** Keystatic config changed (new singleton) → dev server restart needed to edit "About page". Hero (background, done earlier
+  this day) + now **profile photo** (About — asymmetric image/text layout when present, else centered),
+  **service card images** (inset top of each card, decorative `alt=""`), and **credential logos**
+  (logo when present, else the name wordmark; uses the existing `alt` field). All via the shared
+  `lib/assets.resolveImage()` + conditional render, so each falls back to the prior text-only look
+  until a photo is uploaded. **Gotcha found + fixed:** Keystatic **omits empty optional fields**
+  from the singleton JSON on save (the hero upload dropped the `profileImage`/`profileAlt` keys),
+  which broke the typed JSON import. Made every singleton-image consumer tolerant of absent keys
+  (cast optional + defaults) so a CMS save can't break the type-check. Build green, `astro check` 0/0/0, `npm run qa` 0/0.
+- 2026-06-08 — **Default OG/social image wired.** `BaseHead` now falls back to `siteSettings.ogImage`
+  (resolved via `lib/assets`) when a page passes no `image` — so home/archives/testimonials/etc get a
+  site-wide social image; posts keep using their hero. Emits an absolute `og:image` URL +
+  `og:image:width`/`height` (from intrinsic metadata) and upgrades `twitter:card` to
+  `summary_large_image`. Verified end-to-end by temporarily pointing `ogImage` at a real asset
+  (absolute `/_astro/…` URL + 1600×800 dims emitted), then reverted to null. Upload a **1200×630**
+  image via the Site settings singleton ("Default OG image") to activate it. **This was the last
+  unwired singleton image — all image slots (hero, profile, services, credentials, OG) now render.** (a) Email → grant@grantbthept.co.za;
   **phone removed** (not published) from schema/settings/Keystatic + specs; address confirmed
   (Planet Fitness Plattekloof); geo looked up (-33.873037,18.578080); opening hours Mon–Fri 06:00–18:00
   stored structured (single source) → drives contact display + new `openingHoursSpecification`.
