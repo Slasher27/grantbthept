@@ -7,8 +7,9 @@ import TransformationCard from '../../components/testimonials/TransformationCard
 import { getCollection } from 'astro:content';
 import { collectionGraph } from '../../lib/schema';
 
-// Only consented testimonials publish (POPIA). The schema also enforces this.
-// Featured first, then by manual order.
+// POPIA publish gate: only consented testimonials reach the public page. This filter
+// is the enforcement point (the schema intentionally does NOT hard-fail on consent —
+// that would crash dev/build while authoring). Featured first, then by manual order.
 const testimonials = (await getCollection('testimonials'))
   .filter((t) => t.data.consent === true)
   .sort(

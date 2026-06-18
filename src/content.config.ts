@@ -26,33 +26,32 @@ const posts = defineCollection({
     }),
 });
 
-// Before/after transformation stories. A testimonial only builds when consent
-// is true — personal data must not publish without documented consent (POPIA).
+// Before/after transformation stories. POPIA consent is a *publish filter*, not a
+// schema hard-fail: an unconsented entry must still LOAD (so authoring it in Keystatic —
+// which defaults `consent` to false — never crashes dev/build), it just never renders.
+// The pages that list/build testimonials filter `consent === true`, so no unconsented
+// personal data ever publishes (no page, no card, no schema). See specs/03.
 const testimonials = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/testimonials' }),
   schema: ({ image }) =>
-    z
-      .object({
-        clientName: z.string(), // may be first name / initial for privacy
-        headline: z.string().max(80),
-        summary: z.string().max(200),
-        program: z.enum([
-          'personal-training',
-          'lifestyle-coaching',
-          'corporate-wellness',
-        ]),
-        durationWeeks: z.number().int().positive().optional(),
-        beforeImage: image().optional(),
-        afterImage: image().optional(),
-        imageAlt: z.string().optional(),
-        rating: z.number().min(1).max(5).optional(),
-        consent: z.boolean(),
-        featured: z.boolean().default(false),
-        order: z.number().default(0),
-      })
-      .refine((d) => d.consent === true, {
-        message: 'Testimonial cannot publish without consent',
-      }),
+    z.object({
+      clientName: z.string(), // may be first name / initial for privacy
+      headline: z.string().max(80),
+      summary: z.string().max(200),
+      program: z.enum([
+        'personal-training',
+        'lifestyle-coaching',
+        'corporate-wellness',
+      ]),
+      durationWeeks: z.number().int().positive().optional(),
+      beforeImage: image().optional(),
+      afterImage: image().optional(),
+      imageAlt: z.string().optional(),
+      rating: z.number().min(1).max(5).optional(),
+      consent: z.boolean(),
+      featured: z.boolean().default(false),
+      order: z.number().default(0),
+    }),
 });
 
 export const collections = { posts, testimonials };

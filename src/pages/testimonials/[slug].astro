@@ -11,9 +11,10 @@ import { getCollection, render } from 'astro:content';
 import { PROGRAM_LABELS, testimonialSlug } from '../../lib/testimonials';
 import { reviewGraph } from '../../lib/schema';
 
-// Individual transformation story at /testimonials/<slug>/. Only consented entries
-// build (POPIA — the schema also enforces consent). Emits a Review of the business
-// (specs/05). AggregateRating is deferred until multiple real, consented ratings exist.
+// Individual transformation story at /testimonials/<slug>/. POPIA publish gate: only
+// consented entries build a page (this filter is the enforcement point — the schema
+// does NOT hard-fail on consent, which would crash dev/build while authoring). Emits a
+// Review of the business (specs/05). AggregateRating deferred until ≥1 real consented rating.
 export async function getStaticPaths() {
   const items = (await getCollection('testimonials')).filter((t) => t.data.consent === true);
   return items.map((t) => ({ params: { slug: testimonialSlug(t) }, props: { testimonial: t } }));

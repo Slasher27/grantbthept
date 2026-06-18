@@ -4,12 +4,18 @@
 > session reads this + the repo to re-orient. Specs (`/specs`) = what to build;
 > `CLAUDE.md` = how to behave; this file = where we are + what we decided.
 
-**Last updated:** 2026-06-08
-**Current phase:** Phase 3→4. All **dev-only** work is complete: pages, structured data, RSS,
-CSP + security headers, header scroll-condense, profile-image field, lint clean, and a Phase 4
-a11y QA pass (axe 0 / CSP 0 across all 11 templates). Remaining items are launch-gated, NOT dev:
-contact/newsletter backend, real image assets, `[VERIFY]` business facts, GSC URL parity, CI.
-**Build state:** `astro check` 0/0/0; `npm run build` green; `npm run qa` 0 axe / 0 console.
+**Last updated:** 2026-06-18 (session end)
+**Current phase:** Phase 4 — **deployed to Netlify staging** (`grantbthept.netlify.app`) and in
+active testing. Build is feature-complete for a staging site. Done this session: full About
+split (homepage teaser + `/about/` page + `about` singleton), all singleton images wired AND
+uploaded (hero, profile, OG, 5 credential logos), LocalBusiness NAP completed (email/address/geo/
+hours real; **phone deliberately not published**), contact form kept on Netlify Forms with a
+**branded inline success/error** state, Keystatic **gated to dev-only** (deployed admin was broken
+in local mode), and Shiki highlighting disabled (CSP). Remaining work is **launch-gated, not dev**:
+real consented testimonial, privacy-policy sign-off, DNS/URL-parity cutover, GSC, and Keystatic
+Cloud + inviting Grant (**explicitly parked until everything is 100%**).
+**Build state:** `astro check` 0/0/0; `npm run build` green; `npm run qa` 0 axe / 0 console (12 templates).
+**Working tree:** clean as of session end (HEAD `39ea326`); only this PROGRESS update is uncommitted.
 **Last build:** ✓ green (`npm run build`) — clean rebuild. NOTE: on Windows a stale
 `.netlify/`+`dist/` cache makes the build fail with `Cannot find module …prerender-entry….mjs`;
 `rm -rf .netlify dist` before `npm run build` clears it. (See decisions below.)
@@ -48,8 +54,13 @@ contact/newsletter backend, real image assets, `[VERIFY]` business facts, GSC UR
 - **Keystatic — co-located images (commits 2d7dbc3, af41871).** `heroImage`/before/after use no
   `directory`/`publicPath`, so Keystatic writes the upload beside the entry (`./hero.<ext>`) and
   Astro's `image()` resolves the relative path. Each post/testimonial is self-contained.
-- **Keystatic — POPIA consent gate.** Testimonial `consent` checkbox defaults to `false`; the Zod
-  schema `.refine()` blocks the build if a testimonial publishes without consent.
+- **Keystatic — POPIA consent gate (publish filter, NOT a schema refine — fixed 2026-06-18).**
+  Testimonial `consent` defaults to `false`; only `consent === true` entries publish. This is
+  enforced as a **render-time filter** in the two testimonial pages, NOT a Zod `.refine()`. The
+  old `.refine()` hard-failed content load, which crashed `astro dev`/`build` the instant Keystatic
+  saved a half-authored testimonial (consent unticked) → catch-22: couldn't open Keystatic to tick
+  the box. Unconsented entries now load but never render (no page/card/schema). Do NOT reinstate the
+  refine. See specs/03.
 - **Storage = local (git-based).** Commits MDX/JSON straight to the repo. Keystatic **Cloud** is
   the chosen launch path (invite Grant by email) but not wired yet — see decisions below.
 - **Windows build-cache crash (this session).** A fresh `npm run build` failed with
@@ -110,28 +121,36 @@ contact/newsletter backend, real image assets, `[VERIFY]` business facts, GSC UR
 
 ---
 
-## Next up — Phase 3 (pages + design)
-Per `/specs/07-page-specs.md`, with `04` (design system), `05` (SEO/schema), `06` (perf/a11y).
-1. ~~Sample the real brand colours + font from the live site → replace placeholder tokens.~~
-   ✓ **Done** — sampled from the live Blocksy palette + self-hosted Poppins (see session log).
-2. Build the layouts + UI primitives, then home sections, blog index/pagination, post
-   template, category (incl. nested), author, `/testimonials/`, `/privacy-policy/`, `404`.
-3. ~~Structured data per page type.~~ ✓ **Done** — `lib/schema.ts` + `Schema.astro`, wired to
-   every template (see session log). LocalBusiness NAP now ships dummy (user OK'd); real values +
-   testimonials swap at production. Left to do: validate live in Rich Results Test after deploy.
-4. ~~**`/rss.xml` + `<head>` `<link rel="alternate">`** (specs/05, 08).~~ ✓ **Done** (2026-06-08) —
-   `@astrojs/rss` endpoint + site-wide head link; build green, feed validated (see session log).
-5. Contact/newsletter backend — deferred by user (Resend after launch; newsletter needs a
-   provider). Stays on the Netlify-Forms demo path.
-6. Hit the `06` budgets (Lighthouse, CWV, axe) on each template — Phase 4.
+## Next up — testing → launch (Phase 4/5)
+
+The site is built and on Netlify staging. Everything below is launch-gated; nothing is
+blocked on more dev. Roughly in order:
+
+1. **Finish testing** the staging site (`grantbthept.netlify.app`) — including a live
+   **contact-form submission** → confirm it lands in **Netlify → Forms** and set the
+   form-notification email to grant@grantbthept.co.za.
+2. **Live validation** (needs the deploy): run **Rich Results Test** on the JSON-LD
+   (Home/Post/About/Testimonial/Breadcrumb) and a **Lighthouse** pass on a real URL — the
+   hero LCP number is only meaningful deployed. Fix anything that regresses the `06` budgets.
+3. **Content sign-off (`[VERIFY]`):** replace the `sarah-m` **SAMPLE** testimonial with a real
+   consented one (its Review schema ships live; add `AggregateRating` once ≥1 real rating);
+   privacy-policy sign-off; review the homepage About summary (my draft).
+4. **Newsletter** — still not built; needs a provider decision before wiring.
+5. **Cutover (specs/08, Gate D):** **URL-parity check** (every old indexed URL → 200 same path
+   or single 301; zero 404s — the core migration risk), DNS apex→www 301, TLS/HSTS, then submit
+   `sitemap-index.xml` in GSC and spot-check top URLs live.
+6. **Final step — Keystatic Cloud + invite Grant.** PARKED until everything is 100% (user). When
+   done, also add a CSP exception for the `/keystatic` route (needs `'unsafe-inline'` styles +
+   `fonts.googleapis.com`).
 
 Follow the Minimal-code mandate. No Alpine until an interactive component genuinely needs it.
 
-### Single next step
-With RSS done, Phase 3's only remaining item is the **contact/newsletter backend** (Resend +
-Altcha endpoint replacing the Netlify-Forms demo path; newsletter still needs a provider
-decision) — deferred by user. Otherwise the next move is **Phase 4 (QA/budgets)**: run the
-`06` Lighthouse/axe/CWV budgets on each template, plus add `robots.txt` (specs/08 launch list).
+### Single next step (start here next session)
+Pick up **testing/validation on the Netlify staging deploy** (items 1–2): do a real contact-form
+submission + set the Forms notification email, then run **Rich Results Test + a live Lighthouse
+pass** and note any `06`-budget regressions. After that, the biggest launch-gating work is the
+**URL-parity check** (item 5) — the migration's whole point is not breaking indexed URLs.
+Decisions still owed by the user: newsletter provider, and the testimonial/privacy sign-off.
 
 ---
 
@@ -360,3 +379,20 @@ decision) — deferred by user. Otherwise the next move is **Phase 4 (QA/budgets
   type="application/rss+xml">` in `BaseHead`. New dep `@astrojs/rss` justified: spec (05/08)
   requires the feed; hand-rolled XML is worse. Build green; feed validated (5 items, valid
   RSS 2.0, correct legacy date URLs + pubDates).
+- 2026-06-18 — **URL-parity check done (no GSC needed) + consent-gate redesign + orphan 301.**
+  (a) **URL parity (specs/02, the core launch gate):** GSC access unavailable, so pulled the
+  authoritative list from the **old WP site's own live `wp-sitemap.xml`** — only **14 indexed URLs**.
+  Compared to the new build: **13/14 map 1:1 exactly** (home, `/news/`, all 5 date posts, all 6
+  categories incl. `/category/plans/` parent + `plans/workout` — the latter was `[VERIFY]`, now
+  CONFIRMED against the live sitemap). The **one** gap was `/elementor-landing-page-719/` (orphan
+  Elementor auto-page, no real content) → added a single-hop **301 → `/`** in `astro.config.mjs`
+  `redirects` (user-approved). Net: zero expected 404s at cutover. NOTE: the old WP author archive
+  slug (`/author/...`) and any non-sitemap indexed URLs aren't covered by wp-sitemap — low risk
+  (not in the published index), spot-check in GSC post-launch. (b) **Consent gate redesigned
+  (build-breaker fix):** a dummy `mike-g` testimonial saved via Keystatic (consent unticked) crashed
+  `astro dev`/`build` via the schema `.refine(consent===true)` → blank `/keystatic`, couldn't author.
+  Removed the refine; consent is now a **render-time publish filter** (already present in both
+  testimonial pages), so unconsented entries load but never render. Updated specs/03 + the fix note
+  above. `astro check` 0/0/0 with the dummy present. (c) Still launch-gated: privacy-policy sign-off,
+  a real consented testimonial (mike-g/sarah-m are dummies), live Rich-Results/Lighthouse pass,
+  contact-form test + notification email, DNS cutover, then Keystatic Cloud.

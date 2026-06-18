@@ -24,6 +24,12 @@ export default defineConfig({
   // as Netlify Functions via the adapter below — the "hybrid route" in specs/01.
   output: 'static',
   adapter: netlify(),
+  // URL parity (specs/02). The old WP site's wp-sitemap exposed one orphan Elementor
+  // auto-page with no successor on the new site; single-hop 301 → home so the indexed
+  // URL never 404s at cutover. All other old URLs map 1:1 (verified against wp-sitemap).
+  redirects: {
+    '/elementor-landing-page-719/': '/',
+  },
   // Self-hosted brand font (specs/04, 06). The Google provider downloads Poppins at
   // build time and serves it from our own origin — no third-party font CDN at runtime.
   // Poppins is the live brand font; 3 weights only (body / semibold UI / bold headings).

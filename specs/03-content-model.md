@@ -51,17 +51,22 @@ const testimonials = defineCollection({
     afterImage: image().optional(),
     imageAlt: z.string().optional(),
     rating: z.number().min(1).max(5).optional(),   // feeds Review/AggregateRating (05)
-    consent: z.boolean(),                          // MUST be true to publish (POPIA)
+    consent: z.boolean(),                          // gates PUBLISH, not load (POPIA)
     featured: z.boolean().default(false),
     order: z.number().default(0),
-  }).refine(d => d.consent === true, { message: 'Testimonial cannot publish without consent' }),
+  }),
 });
 ```
 
 > **Privacy gate:** before/after photos and named results are personal data. A
-> testimonial only builds/publishes when `consent: true`, representing documented written
-> consent from the client. This is enforced in schema *and* checked at a human gate.
-> Use first name or initial unless full name is explicitly consented.
+> testimonial only **publishes** when `consent: true`, representing documented written
+> consent from the client. Enforce this as a **publish filter** in the pages that list/
+> build testimonials (`.filter(t => t.data.consent === true)`), *not* as a schema
+> `.refine()` — a hard schema failure crashes `astro dev`/`build` the moment Keystatic
+> saves a half-authored entry (its `consent` defaults to false), creating a catch-22
+> where you can't open Keystatic to tick the box. The filter keeps unconsented entries
+> off every public surface (page, card, schema) while still letting them load. Consent is
+> also checked at a human gate. Use first name or initial unless full name is consented.
 
 ## Singletons (Keystatic singletons, rendered into sections)
 
