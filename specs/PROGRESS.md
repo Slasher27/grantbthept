@@ -393,6 +393,22 @@ Decisions still owed by the user: newsletter provider, and the testimonial/priva
   `astro dev`/`build` via the schema `.refine(consent===true)` → blank `/keystatic`, couldn't author.
   Removed the refine; consent is now a **render-time publish filter** (already present in both
   testimonial pages), so unconsented entries load but never render. Updated specs/03 + the fix note
-  above. `astro check` 0/0/0 with the dummy present. (c) Still launch-gated: privacy-policy sign-off,
-  a real consented testimonial (mike-g/sarah-m are dummies), live Rich-Results/Lighthouse pass,
-  contact-form test + notification email, DNS cutover, then Keystatic Cloud.
+  above. `astro check` 0/0/0 with the dummy present.
+- 2026-06-18 (cont.) — **Google Analytics + POPIA consent banner + privacy policy finalised; newsletter
+  confirmed deferred.** (a) **Privacy policy** is now **basic + signed off** (Grant accepts basic) —
+  dropped the draft/pending framing, resolved all `[VERIFY]` placeholders (retention, contact, sharing)
+  to plain wording, removed every newsletter mention. (b) **Newsletter** explicitly deferred to
+  post-launch (user) — no code, blocks nothing. (c) **Analytics = Google Analytics (G-6WB7VFEB4Q)**
+  behind a **cookie-consent banner** (user chose opt-in over no-banner/cookieless). New
+  `components/layout/CookieConsent.astro` (in `BaseLayout`, site-wide): GA's gtag.js loads ONLY after
+  Accept; choice stored in localStorage; Decline never loads GA; **withdrawable** via a new Footer
+  "Cookie settings" button (`[data-cookie-settings]`) that re-opens the banner. The consent script is
+  bundled (Astro-hashed), so no inline-hash needed. (d) **CSP:** switched `security.csp` from `true`
+  to `{ scriptDirective: { resources: ["'self'", googletagmanager.com] } }` — GA's tag script was the
+  ONLY thing the strict CSP blocked (its data calls to google-analytics.com use connect/img, which are
+  unrestricted since no `default-src` is set). Verified in a clean build: emitted `script-src` =
+  `'self' googletagmanager.com` + auto SHA-256 hashes; `_redirects` carries the elementor 301; **`npm
+  run qa` = 0 a11y / 0 console-CSP across all 12 templates**; `astro check` 0/0/0. **Final GA check is
+  deploy-only:** on the live site, accept the banner and confirm GA fires in GA4 Realtime with no
+  console CSP error. (e) Still launch-gated: a real consented testimonial (mike-g/sarah-m are dummies),
+  live Rich-Results/Lighthouse pass, contact-form test + notification email, DNS cutover, then Keystatic Cloud.

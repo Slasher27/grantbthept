@@ -1,0 +1,93 @@
+---
+// POPIA cookie-consent banner. Google Analytics (gtag.js) loads ONLY after the visitor
+// accepts — never on decline, never before a choice. The choice is remembered in
+// localStorage (functional storage, not a tracking cookie) and can be withdrawn via the
+// footer "Cookie settings" trigger ([data-cookie-settings]). The GA4 measurement ID is
+// public (it appears in page source), so it lives here as a single constant.
+const GA_ID = 'G-6WB7VFEB4Q';
+---
+
+<div
+  id="cookie-consent"
+  data-ga-id={GA_ID}
+  role="region"
+  aria-label="Cookie consent"
+  hidden
+  class="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-surface px-4 py-4 shadow-lg"
+>
+  <div
+    class="mx-auto flex max-w-3xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+  >
+    <p class="text-sm text-muted">
+      We use Google Analytics to understand how this site is used. May we set analytics
+      cookies? See our <a href="/privacy-policy/" class="text-accent-strong underline">Privacy
+      Policy</a>.
+    </p>
+    <div class="flex shrink-0 gap-3">
+      <button
+        type="button"
+        data-consent="decline"
+        class="rounded-[var(--radius)] border border-line px-4 py-2 text-sm font-semibold text-ink hover:border-ink"
+      >
+        Decline
+      </button>
+      <button
+        type="button"
+        data-consent="accept"
+        class="rounded-[var(--radius)] bg-accent-strong px-4 py-2 text-sm font-semibold text-accent-ink hover:bg-accent"
+      >
+        Accept
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const KEY = 'ga-consent';
+  const banner = document.getElementById('cookie-consent');
+
+  if (banner) {
+    const gaId = banner.dataset.gaId;
+    const w = window as unknown as { dataLayer?: unknown[]; __gaLoaded?: boolean };
+
+    function loadGA() {
+      if (!gaId || w.__gaLoaded) return;
+      w.__gaLoaded = true;
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
+      document.head.appendChild(s);
+      w.dataLayer = w.dataLayer || [];
+      function gtag(...args: unknown[]) {
+        w.dataLayer!.push(args);
+      }
+      gtag('js', new Date());
+      gtag('config', gaId);
+    }
+
+    const choice = localStorage.getItem(KEY);
+    if (choice === 'granted') {
+      loadGA();
+    } else if (choice !== 'denied') {
+      banner.hidden = false;
+    }
+
+    banner.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-consent]');
+      if (!btn) return;
+      const accepted = btn.dataset.consent === 'accept';
+      localStorage.setItem(KEY, accepted ? 'granted' : 'denied');
+      banner.hidden = true;
+      if (accepted) loadGA();
+    });
+
+    // POPIA withdraw/change: a "Cookie settings" link anywhere re-opens the banner.
+    document.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('[data-cookie-settings]')) {
+        e.preventDefault();
+        localStorage.removeItem(KEY);
+        banner.hidden = false;
+      }
+    });
+  }
+</script>

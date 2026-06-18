@@ -64,10 +64,17 @@ export default defineConfig({
   // plain monospace (styled by Prose). Switch to 'prism' (class-based, CSP-safe) only if
   // code content is ever needed.
   markdown: { syntaxHighlight: false },
-  // Content-Security-Policy via Astro's CSP API (specs/06). For static output Astro
-  // emits a per-page <meta http-equiv> with SHA-256 hashes for its own bundled scripts
-  // and <style> blocks (no 'unsafe-inline'). We use no inline style attributes and the
-  // only inline <script> is JSON-LD (a data block, not script-src governed), so the
-  // default policy is sufficient; images/fonts have no default-src restriction.
-  security: { csp: true },
+  // Content-Security-Policy via Astro's CSP API (specs/06). For static output Astro emits
+  // a per-page <meta http-equiv> with SHA-256 hashes for its own bundled scripts and
+  // <style> blocks (no 'unsafe-inline'). We add googletagmanager.com to script-src so the
+  // consent-gated Google Analytics tag can load (see CookieConsent.astro). GA's data calls
+  // go to google-analytics.com via connect/img, which stay unrestricted (no default-src is
+  // set). 'self' is kept so our own hashed scripts still run; auto-hashes still apply.
+  security: {
+    csp: {
+      scriptDirective: {
+        resources: ["'self'", 'https://www.googletagmanager.com'],
+      },
+    },
+  },
 });

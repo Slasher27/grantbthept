@@ -5,9 +5,10 @@ import Prose from '../../components/ui/Prose.astro';
 import Breadcrumb from '../../components/blog/Breadcrumb.astro';
 import siteSettings from '../../content/singletons/site-settings.json';
 
-// POPIA privacy policy. DRAFT — every [VERIFY] item (provider names, retention period,
-// contact details) must be confirmed with Grant at an acceptance gate before launch
-// (specs/05, CLAUDE.md). Safe to show in a demo while clearly marked draft.
+// POPIA privacy policy — deliberately basic (Grant signed off on a basic policy, 2026-06-18).
+// Newsletter deferred until built (no mention here). Analytics = Google Analytics, loaded only
+// after opt-in via the cookie-consent banner (see CookieConsent.astro); withdrawable from the
+// footer "Cookie settings" link.
 const contactEmail = siteSettings.contactEmail;
 ---
 
@@ -18,9 +19,7 @@ const contactEmail = siteSettings.contactEmail;
   <Section tone="paper">
     <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Privacy Policy' }]} />
     <h1 class="mt-6 text-2xl">Privacy Policy</h1>
-    <p class="mt-3 text-sm text-muted">
-      Draft &mdash; pending final confirmation. Last updated 5 June 2026.
-    </p>
+    <p class="mt-3 text-sm text-muted">Last updated 18 June 2026.</p>
 
     <Prose class="mt-8">
       <p>
@@ -35,23 +34,23 @@ const contactEmail = siteSettings.contactEmail;
           <strong>Contact form:</strong> your name, email address and the message you send us.
         </li>
         <li>
-          <strong>Newsletter (if you subscribe):</strong> your email address.
-        </li>
-        <li>
-          <strong>Usage data:</strong> basic, privacy-friendly analytics that do not identify
-          you personally. [VERIFY — confirm analytics provider, e.g. Plausible/Fathom, or none.]
+          <strong>Usage data:</strong> with your consent, we use Google Analytics to understand,
+          in aggregate, how visitors use the site. It sets cookies and processes data (such as
+          your approximate location, device and the pages you view) on our behalf. It only runs
+          if you accept analytics cookies in the banner shown on your first visit — you may
+          decline, and you can change your choice at any time via the &ldquo;Cookie settings&rdquo;
+          link in the footer.
         </li>
       </ul>
 
       <h2>How we use your information</h2>
       <ul>
         <li>To respond to your enquiry and provide the coaching services you ask about.</li>
-        <li>To send you our newsletter, only if you have opted in (double opt-in).</li>
         <li>To understand, in aggregate, how the website is used so we can improve it.</li>
       </ul>
       <p>
-        We rely on your <strong>consent</strong> for the contact form and newsletter. You can
-        withdraw consent at any time.
+        We rely on your <strong>consent</strong> for the contact form. You can withdraw consent
+        at any time.
       </p>
 
       <h2>Who we share it with</h2>
@@ -60,17 +59,17 @@ const contactEmail = siteSettings.contactEmail;
         needed to operate the site:
       </p>
       <ul>
-        <li><strong>Website hosting:</strong> Netlify (hosting and form delivery).</li>
         <li>
-          <strong>Email delivery / newsletter:</strong> [VERIFY — confirm provider, e.g. Resend
-          for contact email and the newsletter provider once chosen.]
+          <strong>Website hosting &amp; contact form:</strong> Netlify (hosts the site and
+          delivers your contact-form message to us).
         </li>
+        <li><strong>Analytics:</strong> Google (aggregated website-usage statistics).</li>
       </ul>
 
       <h2>How long we keep it</h2>
       <p>
-        We keep contact enquiries only as long as needed to deal with your request, and
-        newsletter details until you unsubscribe. [VERIFY — confirm a specific retention period.]
+        We keep contact enquiries only as long as necessary to deal with your request and for a
+        reasonable period afterwards, then delete them.
       </p>
 
       <h2>Your rights under POPIA</h2>
@@ -88,8 +87,7 @@ const contactEmail = siteSettings.contactEmail;
       <h2>Contact</h2>
       <p>
         For any privacy request or question, email
-        <a href={`mailto:${contactEmail}`}>{contactEmail}</a>. [VERIFY — confirm the contact
-        address for data requests.]
+        <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.
       </p>
 
       <h2>Changes to this policy</h2>
