@@ -3,11 +3,13 @@ import { categories } from './src/lib/categories';
 
 const categoryOptions = categories.map((c) => ({ label: c.name, value: c.slug }));
 
-// Git-based CMS, local storage for now (commits Markdown/MDX to the repo).
-// Collections + singletons mirror the content model in specs/03. Field fidelity
-// to the Zod schemas (content.config.ts) is finalised in Phase 2.
+// Git-based CMS on Keystatic Cloud: the admin authenticates against Keystatic Cloud and
+// commits MDX/JSON to the GitHub repo (Slasher27/grantbthept), which triggers a Netlify
+// rebuild. Cloud (not `local`) is what lets the DEPLOYED /keystatic work and lets Grant
+// edit by email invite without a GitHub account. Collections + singletons mirror specs/03.
 export default config({
-  storage: { kind: 'local' },
+  storage: { kind: 'cloud' },
+  cloud: { project: 'grantbthept/website' },
   ui: {
     brand: { name: 'Grant Booysen PT' },
   },
