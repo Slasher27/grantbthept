@@ -4,22 +4,35 @@ The previous migration mistake to avoid: old URLs left indexed alongside new one
 creating duplication and a traffic drop. The rule here is simple: **the URL surface of
 the new site is a superset of the old one. Nothing moves silently.**
 
-## Trailing slash — `always` (not `never`)
+## Trailing slash — every indexed URL ends in `/`
 
-Every indexed URL on the live site ends in `/`. Therefore:
+Every indexed URL on the live site ends in `/`. The **requirement** is behavioural, not a
+specific config value: a request to `/news` (no slash) must `301` → `/news/`, never serve a
+duplicate, and sitemap + canonical URLs must always carry the slash.
 
 ```
-trailingSlash: 'always'
+trailingSlash: 'ignore'      // see the note below — NOT 'always'
 build: { format: 'directory' }
 ```
 
-This is a deliberate departure from the house `never` convention. Do not "fix" it.
-A request to `/news` (no slash) must `301` → `/news/`, never serve a duplicate.
-
-> **Dev-only exception (implemented):** Keystatic's admin API calls itself without a
-> trailing slash, which `'always'` rejects ("Unable to load collection"). `astro.config.mjs`
-> therefore relaxes to `trailingSlash: 'ignore'` **in `astro dev` only** (`isDev` guard); the
-> production build keeps `'always'`, so deployed/indexed URLs are unchanged.
+> **⚠️ Superseded (2026-07-16, gated + approved): `trailingSlash` is `'ignore'`, not `'always'`.**
+> This spec originally mandated `'always'`. That was **wrong for this stack**, and the reason is
+> worth keeping: on Netlify, `'always'` was never what produced the `301`. **`build.format:
+> 'directory'` + Netlify's static directory handling** issue it (`/news` → `301` → `/news/`,
+> verified live). Astro's `'always'` **404s** rather than `301`s, so it never delivered that
+> redirect for content at all — it only governed the **on-demand routes**, which here means
+> **only Keystatic**. Keystatic injects `/keystatic/[...params]` + `/api/keystatic/[...params]`
+> and calls them **without** a trailing slash, so `'always'` 404'd the Cloud OAuth callback and
+> made live editing impossible. Netlify-level fixes don't work (its redirect matcher ignores
+> trailing slashes → self-redirect loop; and it can't rewrite *into* an SSR-function path).
+>
+> **Verified under `'ignore'`:** sitemap URLs keep trailing slashes; canonicals stay
+> self-referential with slashes; static output unchanged; all 14 legacy URLs still resolve;
+> `/news` still `301`s to `/news/`. The URL-preservation guarantee is intact.
+>
+> **Do not "fix" this back to `'always'`** — it would break the CMS and change nothing about
+> the indexed URLs. Note the guarantee now rests on Netlify's directory handling, so **re-verify
+> if the host ever changes**.
 
 ## URL inventory & mapping
 

@@ -7,17 +7,19 @@ import sitemap from '@astrojs/sitemap';
 import netlify from '@astrojs/netlify';
 import tailwindcss from '@tailwindcss/vite';
 
-// Keystatic's admin UI calls its local API without a trailing slash, which
-// trailingSlash:'always' rejects (admin shows "Unable to load collection").
-// The admin only runs in `astro dev` (local storage), so relax to 'ignore' in
-// dev only. The production BUILD keeps 'always' so deployed/indexed URLs are
-// spec-compliant (specs/02) — deployment behaviour is unchanged.
-const isDev = process.argv.includes('dev');
-
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.grantbthept.co.za',
-  trailingSlash: isDev ? 'ignore' : 'always', // build = 'always' (CRITICAL, specs/02)
+  // 'ignore', NOT 'always' — a deliberate, verified deviation from specs/02 (gated +
+  // approved 2026-07-16). Keystatic's two catch-all routes (/keystatic/[...params] and
+  // /api/keystatic/[...params]) call themselves WITHOUT a trailing slash; 'always' made
+  // Astro 404 them, which broke the Cloud OAuth login (/keystatic/cloud/oauth/callback).
+  // Crucially, 'always' was never what protected the indexed URLs: `build.format:'directory'`
+  // + Netlify's static directory handling issue the 301 (/news → /news/) — verified live,
+  // and Astro's 'always' 404s rather than 301s, so it never provided that redirect at all.
+  // It only governed the on-demand routes, i.e. only Keystatic. Verified under 'ignore':
+  // sitemap + canonicals keep trailing slashes, and every legacy URL still resolves.
+  trailingSlash: 'ignore',
   build: { format: 'directory' }, // emits /path/index.html → served as /path/
   // Static by default: every content page is prerendered. Only the Keystatic admin
   // (and future contact/newsletter endpoints) opt into on-demand rendering, served
