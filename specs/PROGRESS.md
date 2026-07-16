@@ -5,20 +5,26 @@
 > `CLAUDE.md` = how to behave; this file = where we are + what we decided.
 
 **Last updated:** 2026-06-18 (session end)
-**Current phase:** Phase 4 — **deployed to Netlify staging** (`grantbthept.netlify.app`) and in
-active testing. Build is feature-complete for a staging site. Done this session: full About
-split (homepage teaser + `/about/` page + `about` singleton), all singleton images wired AND
-uploaded (hero, profile, OG, 5 credential logos), LocalBusiness NAP completed (email/address/geo/
-hours real; **phone deliberately not published**), contact form kept on Netlify Forms with a
-**branded inline success/error** state, Keystatic **gated to dev-only** (deployed admin was broken
-in local mode), and Shiki highlighting disabled (CSP). Remaining work is **launch-gated, not dev**:
-real consented testimonial, privacy-policy sign-off, DNS/URL-parity cutover, GSC, and Keystatic
-Cloud + inviting Grant (**explicitly parked until everything is 100%**).
-**Build state:** `astro check` 0/0/0; `npm run build` green; `npm run qa` 0 axe / 0 console (12 templates).
-**Working tree:** clean as of session end (HEAD `39ea326`); only this PROGRESS update is uncommitted.
-**Last build:** ✓ green (`npm run build`) — clean rebuild. NOTE: on Windows a stale
-`.netlify/`+`dist/` cache makes the build fail with `Cannot find module …prerender-entry….mjs`;
-`rm -rf .netlify dist` before `npm run build` clears it. (See decisions below.)
+**Current phase:** Phase 4 — on Netlify staging (`grantbthept.netlify.app`), **nearly launch-ready.**
+This session cleared the biggest launch gates: **URL parity done without GSC** (pulled the old WP
+`wp-sitemap.xml` — 13/14 URLs map 1:1, the one orphan Elementor page now 301s → home), **privacy
+policy finalised** (basic, Grant signed off), **Google Analytics + POPIA cookie-consent banner**
+built & verified, **newsletter confirmed deferred** (post-launch, non-blocking), and a **build-breaker
+fixed** (the testimonial consent `.refine()` that crashed dev/Keystatic → now a render-time publish
+filter). **Remaining before DNS flip:** (1) remove/replace the dummy testimonials (`sarah-m`,
+`mike-g`); (2) commit + deploy. **At/after cutover:** DNS switch (domains.co.za → Netlify), then live
+Lighthouse / Rich-Results / GA-Realtime / contact-form checks. **Deferred (non-blocking):** email
+mailbox for `grant@grantbthept.co.za` (Netlify Forms still captures submissions in-dashboard without
+it), Keystatic Cloud (so Grant self-edits live).
+**Build state:** `astro check` 0/0/0; `npm run build` green (clean rebuild this session);
+`npm run qa` 0 axe / 0 console-CSP (12 templates, incl. the new consent banner).
+**Working tree:** clean except this PROGRESS update — **this session's work is committed** (HEAD
+`3deb119`). It landed in two commits: `d7a4655` (consent-gate fix — `.refine()` removed from
+`content.config.ts`, + specs/03) and `3deb119` (GA + cookie-consent banner — new
+`components/layout/CookieConsent.astro`, `BaseLayout`, `Footer`, `privacy-policy/index.astro`,
+and `astro.config.mjs` for the CSP script-src + the `/elementor-landing-page-719/` 301).
+**Last build:** ✓ green. NOTE: on Windows a stale `.netlify/`+`dist/` cache makes the build fail with
+`Cannot find module …prerender-entry….mjs`; `rm -rf .netlify dist` before `npm run build` clears it.
 
 ---
 
@@ -123,34 +129,32 @@ Cloud + inviting Grant (**explicitly parked until everything is 100%**).
 
 ## Next up — testing → launch (Phase 4/5)
 
-The site is built and on Netlify staging. Everything below is launch-gated; nothing is
-blocked on more dev. Roughly in order:
+The site is on Netlify staging and nearly launch-ready. Most gates cleared this session
+(URL parity, privacy, analytics, newsletter-deferral). What's left, in order:
 
-1. **Finish testing** the staging site (`grantbthept.netlify.app`) — including a live
-   **contact-form submission** → confirm it lands in **Netlify → Forms** and set the
-   form-notification email to grant@grantbthept.co.za.
-2. **Live validation** (needs the deploy): run **Rich Results Test** on the JSON-LD
-   (Home/Post/About/Testimonial/Breadcrumb) and a **Lighthouse** pass on a real URL — the
-   hero LCP number is only meaningful deployed. Fix anything that regresses the `06` budgets.
-3. **Content sign-off (`[VERIFY]`):** replace the `sarah-m` **SAMPLE** testimonial with a real
-   consented one (its Review schema ships live; add `AggregateRating` once ≥1 real rating);
-   privacy-policy sign-off; review the homepage About summary (my draft).
-4. **Newsletter** — still not built; needs a provider decision before wiring.
-5. **Cutover (specs/08, Gate D):** **URL-parity check** (every old indexed URL → 200 same path
-   or single 301; zero 404s — the core migration risk), DNS apex→www 301, TLS/HSTS, then submit
-   `sitemap-index.xml` in GSC and spot-check top URLs live.
-6. **Final step — Keystatic Cloud + invite Grant.** PARKED until everything is 100% (user). When
-   done, also add a CSP exception for the `/keystatic` route (needs `'unsafe-inline'` styles +
-   `fonts.googleapis.com`).
+1. **Dummy testimonials** — `sarah-m` + `mike-g` are placeholders; their Review schema ships
+   live. Before launch: **remove them** (page falls back to "stories coming soon") or replace
+   with a real **consented** story (add `AggregateRating` once ≥1 real rating). POPIA gate.
+2. **Cutover (specs/08, Gate D):** add the domain in Netlify, set `www` primary; at domains.co.za
+   point `www` CNAME → `grantbthept.netlify.app` and apex A → Netlify IP (website-only DNS, no MX
+   to preserve — user confirmed no email hosting). TLS auto. The orphan `/elementor-landing-page-719/`
+   301 is already in config; all other old URLs map 1:1 (verified vs wp-sitemap).
+3. **Live validation (deploy-only):** Rich Results Test on the JSON-LD; Lighthouse (mobile) on a
+   real URL (hero LCP only meaningful deployed); **accept the cookie banner → confirm GA4 Realtime
+   fires with no console CSP error**; a real contact-form submission lands in Netlify → Forms.
+4. **Deferred (non-blocking):** email mailbox for `grant@grantbthept.co.za` (Netlify Forms still
+   captures submissions in-dashboard without a notification email — set one when email is sorted);
+   newsletter (post-launch, needs provider); **Keystatic Cloud + invite Grant** (so he self-edits
+   live — then add a CSP exception for `/keystatic`: `'unsafe-inline'` styles + `fonts.googleapis.com`).
 
 Follow the Minimal-code mandate. No Alpine until an interactive component genuinely needs it.
 
 ### Single next step (start here next session)
-Pick up **testing/validation on the Netlify staging deploy** (items 1–2): do a real contact-form
-submission + set the Forms notification email, then run **Rich Results Test + a live Lighthouse
-pass** and note any `06`-budget regressions. After that, the biggest launch-gating work is the
-**URL-parity check** (item 5) — the migration's whole point is not breaking indexed URLs.
-Decisions still owed by the user: newsletter provider, and the testimonial/privacy sign-off.
+**Handle the dummy testimonials** (item 1): remove `sarah-m` + `mike-g`, or wait for a real consented
+story from Grant. That leaves the site genuinely launch-ready — all that remains is the **DNS cutover**
+(item 2) and the **deploy-only validation** (item 3). **No dev work blocks launch.** Open user
+decisions: email mailbox provider (explored, parked), and whether to launch with an empty
+testimonials page or wait for Grant's real story.
 
 ---
 
