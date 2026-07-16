@@ -79,7 +79,15 @@ and `astro.config.mjs` for the CSP script-src + the `/elementor-landing-page-719
   as functions. Expected, correct.
 - **CMS auth: [DECIDE — not yet wired].** Recommended: **Keystatic Cloud** (invite Grant by
   email, no GitHub account needed, free ≤3 users) over GitHub mode. Confirm before launch.
-- `trailingSlash:'always'` confirmed (deliberate override of the house `never` convention).
+- **`trailingSlash: 'ignore'` — NOT `'always'` (changed 2026-07-16 at a gate; see specs/02).**
+  `'always'` 404'd Keystatic's Cloud OAuth callback, making live editing impossible. It turned out
+  `'always'` was never what preserved the indexed URLs on Netlify: `build.format:'directory'` +
+  Netlify's static directory handling issue the 301 (`/news` → `/news/`), and Astro's `'always'`
+  **404s rather than 301s**, so it never produced that redirect for content — it only governed the
+  on-demand routes (i.e. only Keystatic). Verified live under `'ignore'`: all 13 legacy URLs 200,
+  `/news` still 301s to `/news/` (no duplicates), sitemap + canonicals keep their slashes.
+  **Do not revert to `'always'`** — it breaks the CMS and changes nothing about indexed URLs.
+  Caveat: the guarantee now rests on Netlify's directory handling → re-verify if the host changes.
 - Added `/specs/09-references.md` (official docs for the stack).
 - `CLAUDE.md` updated with the **Minimal-code mandate** and **Windows process discipline**
   rule (one astro process at a time → prevents EPERM file-lock errors).
@@ -416,3 +424,23 @@ testimonials page or wait for Grant's real story.
   deploy-only:** on the live site, accept the banner and confirm GA fires in GA4 Realtime with no
   console CSP error. (e) Still launch-gated: a real consented testimonial (mike-g/sarah-m are dummies),
   live Rich-Results/Lighthouse pass, contact-form test + notification email, DNS cutover, then Keystatic Cloud.
+- 2026-07-16 — **Keystatic Cloud wired + the `trailingSlash` deviation (gated, approved).**
+  (a) **Keystatic Cloud live:** project `grantbthept/website` (team `grantbthept`, repo
+  Slasher27/grantbthept). `keystatic.config.ts` → `storage:{kind:'cloud'}` + `cloud:{project}`;
+  removed the dev-only `isDev` gate in `astro.config.mjs` so `/keystatic` ships to production.
+  Cloud Project URLs allowlist: `https://www.grantbthept.co.za` (primary) +
+  `https://grantbthept.netlify.app`; localhost is NOT accepted in that list — local dev is covered
+  by the **"Allow local development"** checkbox (authenticates from `http://127.0.0.1`, so use
+  `127.0.0.1:4321`, NOT `localhost:4321`). (b) **The CSP exception this file predicted was NOT
+  needed** — Astro injects its CSP meta into `<head>`, and Keystatic's admin page renders no
+  `<head>` (client-only React shell), so no policy applies to it. (c) **`trailingSlash` 'always'
+  → 'ignore'** — see the decision entry above + specs/02. `'always'` 404'd the Cloud OAuth callback
+  (`/keystatic/cloud/oauth/callback`), making login impossible. **Netlify-level fixes do NOT work
+  and were reverted (commit 263f307):** Netlify's redirect matcher ignores trailing slashes, so a
+  `/keystatic → /keystatic/` 301 also matched `/keystatic/` → infinite redirect loop; and Netlify
+  cannot rewrite *into* an SSR-function path, so the 200 rewrites never fired. (d) **Verified live
+  after the fix:** OAuth callback 200 (was 404), `/keystatic/` + `/keystatic` both 200, **all 13
+  legacy URLs 200**, elementor 301, `/news` → 301 → `/news/` (no duplicates), sitemap + canonicals
+  keep slashes, `astro check` 0/0/0, build green. **Still to do:** a human end-to-end login (open a
+  collection, save an entry → confirm it commits to GitHub + triggers a Netlify rebuild), then
+  invite Grant (Users tab → email; free plan ≤3 users).
