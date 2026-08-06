@@ -431,9 +431,16 @@ testimonials page or wait for Grant's real story.
   Cloud Project URLs allowlist: `https://www.grantbthept.co.za` (primary) +
   `https://grantbthept.netlify.app`; localhost is NOT accepted in that list — local dev is covered
   by the **"Allow local development"** checkbox (authenticates from `http://127.0.0.1`, so use
-  `127.0.0.1:4321`, NOT `localhost:4321`). (b) **The CSP exception this file predicted was NOT
-  needed** — Astro injects its CSP meta into `<head>`, and Keystatic's admin page renders no
-  `<head>` (client-only React shell), so no policy applies to it. (c) **`trailingSlash` 'always'
+  `127.0.0.1:4321`, NOT `localhost:4321`). (b) **The CSP exception this file predicted WAS needed
+  after all (fixed 2026-07-16, commit 5488ed7).** My first "not needed" call was wrong — I only
+  checked for a `<head>` CSP *meta* and found none, but for on-demand routes Astro delivers the CSP
+  as an **HTTP response header**, which the Keystatic SSR function carries. Its strict `style-src`
+  (no `'unsafe-inline'`) blocked Keystatic's runtime CSS-in-JS → the deployed admin was completely
+  unstyled. Fix: `src/middleware.ts` overrides the CSP header for `/keystatic` + `/api/keystatic`
+  only (relaxed: `'unsafe-inline'` styles + Google Fonts + `https:` connect/img). Content pages are
+  prerendered static and never hit the middleware, so the strict hashed policy still governs every
+  public page — verified live (`/keystatic/` style-src has `'unsafe-inline'`; `/` keeps hashes only).
+  (c) **`trailingSlash` 'always'
   → 'ignore'** — see the decision entry above + specs/02. `'always'` 404'd the Cloud OAuth callback
   (`/keystatic/cloud/oauth/callback`), making login impossible. **Netlify-level fixes do NOT work
   and were reverted (commit 263f307):** Netlify's redirect matcher ignores trailing slashes, so a
