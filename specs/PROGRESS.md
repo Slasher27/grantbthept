@@ -4,25 +4,26 @@
 > session reads this + the repo to re-orient. Specs (`/specs`) = what to build;
 > `CLAUDE.md` = how to behave; this file = where we are + what we decided.
 
-**Last updated:** 2026-06-18 (session end)
-**Current phase:** Phase 4 — on Netlify staging (`grantbthept.netlify.app`), **nearly launch-ready.**
-This session cleared the biggest launch gates: **URL parity done without GSC** (pulled the old WP
-`wp-sitemap.xml` — 13/14 URLs map 1:1, the one orphan Elementor page now 301s → home), **privacy
-policy finalised** (basic, Grant signed off), **Google Analytics + POPIA cookie-consent banner**
-built & verified, **newsletter confirmed deferred** (post-launch, non-blocking), and a **build-breaker
-fixed** (the testimonial consent `.refine()` that crashed dev/Keystatic → now a render-time publish
-filter). **Remaining before DNS flip:** (1) remove/replace the dummy testimonials (`sarah-m`,
-`mike-g`); (2) commit + deploy. **At/after cutover:** DNS switch (domains.co.za → Netlify), then live
-Lighthouse / Rich-Results / GA-Realtime / contact-form checks. **Deferred (non-blocking):** email
-mailbox for `grant@grantbthept.co.za` (Netlify Forms still captures submissions in-dashboard without
-it), Keystatic Cloud (so Grant self-edits live).
-**Build state:** `astro check` 0/0/0; `npm run build` green (clean rebuild this session);
-`npm run qa` 0 axe / 0 console-CSP (12 templates, incl. the new consent banner).
-**Working tree:** clean except this PROGRESS update — **this session's work is committed** (HEAD
-`3deb119`). It landed in two commits: `d7a4655` (consent-gate fix — `.refine()` removed from
-`content.config.ts`, + specs/03) and `3deb119` (GA + cookie-consent banner — new
-`components/layout/CookieConsent.astro`, `BaseLayout`, `Footer`, `privacy-policy/index.astro`,
-and `astro.config.mjs` for the CSP script-src + the `/elementor-landing-page-719/` 301).
+**Last updated:** 2026-07-16 (session end)
+**Current phase:** 🚀 **LAUNCHED — live in production at `https://www.grantbthept.co.za`.** The DNS
+cutover is done and verified end-to-end: HTTPS (Let's Encrypt), apex → www 301, http → https, **all
+13 legacy URLs resolve 200** at their exact paths, `/news` → 301 → `/news/` (no duplicates), the orphan
+Elementor page 301s → home. Google Search Console **verified** (URL-prefix, meta-tag method). The site
+was migrated off the old WordPress with the indexed URL surface fully preserved — the whole point of
+the rebuild, achieved. **Keystatic Cloud is live** (`grantbthept/website`) and Grant can edit the
+production site by email invite. **No fabricated reviews are public** (both dummy testimonials pulled).
+**Remaining (housekeeping, non-blocking):** invite Grant to Keystatic (Users tab → email); submit
+`sitemap-index.xml` in GSC; DO NOT cancel the domains.co.za hosting (Grant's email lives there);
+optional: live Lighthouse/Rich-Results pass, real consented testimonial, ftp/wildcard DNS tidy-up.
+**Build state:** `astro check` 0/0/0; `npm run build` green; `npm run qa` 0 axe / 0 console-CSP
+(11 templates — the testimonial-detail route was removed with the dummies).
+**Working tree:** clean except this PROGRESS update; **all session work committed + pushed + deployed**
+(HEAD `a8a3a41`). Key commits: `2fe510d`/`918e85f`/`7d2887f` (Keystatic Cloud + trailingSlash→ignore),
+`5488ed7` (per-route CSP relax via `src/middleware.ts` for the Keystatic admin styling), `aaf4e13`
+(removed sarah-m, unpublished mike-g), `a8a3a41` (GSC verification meta tag).
+**⚠️ Workflow note:** Keystatic Cloud saves commit straight to `main` and auto-deploy — **save =
+publish**, there is no draft step. The POPIA `consent` checkbox is the only gate; leave it UNCHECKED
+on any non-consented/placeholder testimonial or it goes live (this is how mike-g briefly leaked).
 **Last build:** ✓ green. NOTE: on Windows a stale `.netlify/`+`dist/` cache makes the build fail with
 `Cannot find module …prerender-entry….mjs`; `rm -rf .netlify dist` before `npm run build` clears it.
 
@@ -451,3 +452,22 @@ testimonials page or wait for Grant's real story.
   keep slashes, `astro check` 0/0/0, build green. **Still to do:** a human end-to-end login (open a
   collection, save an entry → confirm it commits to GitHub + triggers a Netlify rebuild), then
   invite Grant (Users tab → email; free plan ≤3 users).
+- 2026-07-16 (cont.) — **🚀 PRODUCTION CUTOVER + GSC + testimonial cleanup.**
+  (a) **DNS cutover (domains.co.za, kept as DNS host — NOT Netlify DNS, to preserve email):** apex A
+  `169.239.218.55` → `75.2.60.5` (Netlify), `www` CNAME → `grantbthept.netlify.app`. Email records
+  left untouched (MX `mx1.tld-mx.com`, `mail` A, pop/smtp/webmail). **SPF fix (subtle, important):**
+  the record was `v=spf1 +a +mx …` — `+a` authorised the *website* IP to send mail, which only worked
+  because site+mail shared a server. Repointing the apex to Netlify would have broken outgoing-mail SPF
+  (Netlify's IP isn't a mail sender, and the `include:` netblocks do NOT cover `169.239.218.55`).
+  Changed to `v=spf1 a:mail.grantbthept.co.za +mx include:_spf.tld-mx.com ~all` — authorises the mail
+  server explicitly, host-independent. (b) **Netlify:** added both domains, set **www primary** (apex
+  → www 301, matching canonicals), Let's Encrypt cert, Force HTTPS. **DO NOT activate Netlify DNS** —
+  it hijacks nameservers and would wipe the email records. (c) **Verified live:** HTTPS both hosts,
+  apex→www, http→https, all 13 legacy URLs 200, elementor 301, `/news`→`/news/`, canonicals + sitemap
+  slashed, GA banner, styled Keystatic. (d) **Testimonials:** deleted `sarah-m` dummy; `mike-g` had
+  been flipped to `consent:true` via a Keystatic test edit and went live as a fake 5★ Review — set back
+  to `consent:false`. `/testimonials/` now shows the empty state; both detail URLs 404; zero Review
+  JSON-LD. `qa.mjs` dropped the sarah-m route (11 templates). (e) **GSC:** verified via `<meta
+  google-site-verification>` in `BaseHead` (URL-prefix property; no DNS access to Grant's registrar).
+  **Housekeeping left:** invite Grant to Keystatic; submit sitemap in GSC; keep the domains.co.za
+  hosting active (email).
