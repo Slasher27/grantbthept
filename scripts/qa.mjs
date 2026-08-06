@@ -52,7 +52,8 @@ const ROUTES = [
   ['category (nested)', '/category/plans/eating/'],
   ['author', '/author/grantbooysen/'],
   ['testimonials', '/testimonials/'],
-  ['testimonial detail', '/testimonials/sarah-m/'],
+  // No 'testimonial detail' route: the only entries (mike-g) are unconsented, so no detail
+  // page builds. Re-add one here (e.g. /testimonials/<slug>/) when a real consented story ships.
   ['privacy policy', '/privacy-policy/'],
   ['404', '/404.html'],
 ];
